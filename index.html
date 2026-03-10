@@ -3,742 +3,680 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>LeadFlow AI — The Autonomous Sales Pipeline</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Mono:wght@300;400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<title>Prospera AI — Autonomous Sales Pipeline</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --bg: #04040a;
-    --surface: #0c0c18;
-    --card: #10101f;
-    --border: rgba(100,100,200,0.15);
-    --accent: #4f6cff;
-    --accent2: #00e5c4;
-    --accent3: #ff4f8b;
-    --text: #e8e8f0;
-    --muted: #6b6b90;
-    --glow: rgba(79,108,255,0.3);
-  }
+:root{--bg:#050509;--bg2:#08080f;--bg3:#0d0d1a;--border:rgba(120,120,255,0.12);--border2:rgba(120,120,255,0.24);--accent:#5b6ef5;--accentH:#7b8fff;--teal:#00d4aa;--rose:#f0436a;--text:#eeeef5;--muted:#6b6b8a;--muted2:#9898b8;--glow:rgba(91,110,245,0.25);}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;overflow-x:hidden;}
+body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.035'/%3E%3C/svg%3E");opacity:.5;}
 
-  * { margin: 0; padding: 0; box-sizing: border-box; }
+/* CURSOR */
+.cur{width:10px;height:10px;background:var(--accent);border-radius:50%;position:fixed;top:0;left:0;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:width .3s,height .3s;mix-blend-mode:screen;}
+.cur-ring{width:36px;height:36px;border:1px solid rgba(91,110,245,.45);border-radius:50%;position:fixed;top:0;left:0;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);}
+@media(max-width:768px){.cur,.cur-ring{display:none;}body{cursor:auto;}}
 
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'DM Mono', monospace;
-    overflow-x: hidden;
-  }
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;align-items:center;justify-content:space-between;padding:1.1rem 4rem;background:rgba(5,5,9,.85);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);transition:padding .3s;}
+nav.scrolled{padding:.75rem 4rem;}
+.nav-logo{font-family:'Bebas Neue',sans-serif;font-size:1.6rem;letter-spacing:.08em;}
+.nav-logo em{color:var(--accent);font-style:normal;}
+.nav-links{display:flex;align-items:center;gap:2.5rem;}
+.nav-links a{color:var(--muted);text-decoration:none;font-size:.8rem;letter-spacing:.06em;transition:color .2s;position:relative;}
+.nav-links a::after{content:'';position:absolute;bottom:-4px;left:0;width:0;height:1px;background:var(--accent);transition:width .3s;}
+.nav-links a:hover{color:var(--text);}
+.nav-links a:hover::after{width:100%;}
+.nav-cta{background:var(--accent)!important;color:#fff!important;padding:.55rem 1.4rem!important;border-radius:2px;font-size:.78rem!important;}
+.nav-cta::after{display:none!important;}
+.nav-cta:hover{background:var(--accentH)!important;}
+.hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;background:none;border:none;padding:4px;}
+.hamburger span{width:24px;height:2px;background:var(--muted2);display:block;}
+.mob-menu{display:none;position:fixed;inset:0;z-index:490;background:rgba(5,5,9,.97);backdrop-filter:blur(20px);flex-direction:column;align-items:center;justify-content:center;gap:2rem;}
+.mob-menu.open{display:flex;}
+.mob-menu a{font-family:'Bebas Neue',sans-serif;font-size:2.5rem;color:var(--text);text-decoration:none;letter-spacing:.08em;transition:color .2s;}
+.mob-menu a:hover{color:var(--accent);}
+.mob-close{position:absolute;top:1.5rem;right:2rem;background:none;border:none;color:var(--muted2);font-size:1.5rem;cursor:pointer;}
+@media(max-width:768px){nav{padding:1rem 1.5rem;}.nav-links{display:none;}.hamburger{display:flex;}}
 
-  /* NAV */
-  nav {
-    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 1.2rem 3rem;
-    background: rgba(4,4,10,0.85);
-    backdrop-filter: blur(16px);
-    border-bottom: 1px solid var(--border);
-  }
-  .nav-logo { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.1rem; letter-spacing: -0.02em; }
-  .nav-logo span { color: var(--accent); }
-  .nav-links { display: flex; gap: 2rem; }
-  .nav-links a {
-    color: var(--muted); text-decoration: none; font-size: 0.75rem;
-    letter-spacing: 0.1em; text-transform: uppercase;
-    transition: color 0.2s;
-  }
-  .nav-links a:hover { color: var(--text); }
+/* UTILS */
+.reveal{opacity:0;transform:translateY(36px);transition:opacity .7s ease,transform .7s ease;}
+.reveal.on{opacity:1;transform:none;}
+.d1{transition-delay:.05s}.d2{transition-delay:.15s}.d3{transition-delay:.25s}.d4{transition-delay:.35s}.d5{transition-delay:.45s}
+.divider{width:100%;height:1px;background:linear-gradient(90deg,transparent,var(--border2),transparent);}
+.s-label{display:inline-block;font-size:.65rem;letter-spacing:.22em;text-transform:uppercase;color:var(--teal);margin-bottom:.9rem;}
+h2.s-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(2.5rem,5vw,4.5rem);line-height:1;letter-spacing:.03em;margin-bottom:1.2rem;}
+.s-sub{color:var(--muted2);font-size:.95rem;line-height:1.8;max-width:540px;font-weight:300;}
+.ta{color:var(--accent);}.tt{color:var(--teal);}
+section{position:relative;z-index:1;}
 
-  /* SECTIONS */
-  section {
-    min-height: 100vh;
-    display: flex; align-items: center; justify-content: center;
-    padding: 7rem 4rem 5rem;
-    position: relative;
-  }
+/* HERO */
+#hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:8rem 2rem 5rem;overflow:hidden;}
+.h-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(91,110,245,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(91,110,245,.05) 1px,transparent 1px);background-size:72px 72px;mask-image:radial-gradient(ellipse 80% 60% at 50% 40%,black 20%,transparent 80%);}
+.h-orb1{position:absolute;top:-10%;left:20%;width:700px;height:700px;background:radial-gradient(circle,rgba(91,110,245,.1) 0%,transparent 65%);pointer-events:none;animation:pulse 8s ease-in-out infinite;}
+.h-orb2{position:absolute;bottom:-10%;right:15%;width:500px;height:500px;background:radial-gradient(circle,rgba(0,212,170,.07) 0%,transparent 65%);pointer-events:none;animation:pulse 10s ease-in-out infinite reverse;}
+@keyframes pulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.15);opacity:.7}}
+.h-badge{display:inline-flex;align-items:center;gap:.6rem;border:1px solid var(--border2);background:rgba(91,110,245,.08);padding:.4rem 1rem;border-radius:999px;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--accentH);margin-bottom:2.5rem;position:relative;z-index:1;animation:fd .8s ease both;}
+.h-dot{width:6px;height:6px;border-radius:50%;background:var(--teal);box-shadow:0 0 8px var(--teal);animation:blink 2s infinite;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+h1.h-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(4rem,10vw,9rem);line-height:.9;letter-spacing:.02em;position:relative;z-index:1;animation:fd .9s .1s ease both;}
+.la{display:block;color:var(--text);}
+.lb{display:block;background:linear-gradient(135deg,var(--accent) 0%,var(--teal) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.lc{display:block;color:rgba(255,255,255,.12);-webkit-text-stroke:1px rgba(255,255,255,.18);}
+.h-sub{font-size:clamp(1rem,2vw,1.2rem);color:var(--muted2);max-width:580px;line-height:1.75;margin:2rem auto 3rem;position:relative;z-index:1;animation:fd 1s .25s ease both;font-weight:300;}
+.h-actions{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;position:relative;z-index:1;animation:fd 1s .35s ease both;}
+.btn-p{background:var(--accent);color:#fff;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:.85rem;font-weight:500;padding:.9rem 2.2rem;border-radius:3px;transition:background .2s,transform .2s,box-shadow .2s;box-shadow:0 0 30px rgba(91,110,245,.3);}
+.btn-p:hover{background:var(--accentH);transform:translateY(-2px);box-shadow:0 4px 40px rgba(91,110,245,.5);}
+.btn-g{background:transparent;color:var(--muted2);border:1px solid var(--border2);cursor:pointer;font-family:'DM Sans',sans-serif;font-size:.85rem;padding:.9rem 2.2rem;border-radius:3px;transition:color .2s,border-color .2s;}
+.btn-g:hover{color:var(--text);border-color:var(--accent);}
+.h-logos{margin-top:5rem;position:relative;z-index:1;animation:fd 1s .5s ease both;}
+.h-logos p{font-size:.7rem;color:var(--muted);letter-spacing:.15em;text-transform:uppercase;margin-bottom:1.2rem;}
+.logos-row{display:flex;gap:3rem;align-items:center;justify-content:center;flex-wrap:wrap;}
+.logo-item{font-family:'Space Mono',monospace;font-size:.75rem;color:var(--muted);opacity:.45;letter-spacing:.1em;text-transform:uppercase;transition:opacity .2s;}
+.logo-item:hover{opacity:.9;}
+.scroll-ind{position:absolute;bottom:2.5rem;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:.5rem;z-index:1;animation:fd 1s .7s ease both;}
+.scroll-ind span{font-size:.65rem;letter-spacing:.2em;color:var(--muted);text-transform:uppercase;}
+.scroll-line{width:1px;height:50px;background:linear-gradient(to bottom,var(--accent),transparent);animation:drop 2s ease-in-out infinite;}
+@keyframes drop{0%,100%{transform:scaleY(0);transform-origin:top}50%{transform:scaleY(1);transform-origin:top}}
+@keyframes fd{from{opacity:0;transform:translateY(-18px)}to{opacity:1;transform:translateY(0)}}
 
-  /* HERO */
-  #hero {
-    flex-direction: column;
-    text-align: center;
-    overflow: hidden;
-  }
-  .hero-eyebrow {
-    font-size: 0.7rem; letter-spacing: 0.25em; text-transform: uppercase;
-    color: var(--accent); margin-bottom: 2rem;
-    display: flex; align-items: center; justify-content: center; gap: 0.75rem;
-  }
-  .hero-eyebrow::before, .hero-eyebrow::after {
-    content: ''; width: 40px; height: 1px; background: var(--accent); opacity: 0.5;
-  }
-  h1 {
-    font-family: 'Syne', sans-serif; font-weight: 800;
-    font-size: clamp(3.5rem, 8vw, 7rem);
-    line-height: 0.95; letter-spacing: -0.03em;
-    margin-bottom: 1.5rem;
-  }
-  h1 .line1 { display: block; color: var(--text); }
-  h1 .line2 { display: block; color: transparent;
-    -webkit-text-stroke: 1px rgba(255,255,255,0.25); }
-  h1 .accent-word { color: var(--accent); }
-  .hero-sub {
-    font-family: 'Instrument Serif', serif; font-style: italic;
-    font-size: 1.3rem; color: var(--muted); max-width: 540px; line-height: 1.6;
-    margin: 0 auto 3rem;
-  }
-  .hero-cta {
-    display: inline-flex; align-items: center; gap: 0.75rem;
-    background: var(--accent); color: #fff;
-    font-family: 'DM Mono', monospace; font-size: 0.75rem; letter-spacing: 0.1em; text-transform: uppercase;
-    padding: 1rem 2.5rem; border: none; cursor: pointer;
-    clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px));
-    transition: background 0.2s, transform 0.2s;
-  }
-  .hero-cta:hover { background: #6680ff; transform: translateY(-2px); }
+/* METRICS */
+.metrics{background:var(--bg3);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:4rem 2rem;position:relative;z-index:1;}
+.metrics-g{max-width:1140px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr);gap:2rem;text-align:center;}
+.m-val{font-family:'Bebas Neue',sans-serif;font-size:clamp(2.8rem,5vw,4.5rem);background:linear-gradient(135deg,var(--accent),var(--teal));-webkit-background-clip:text;-webkit-text-fill-color:transparent;line-height:1;}
+.m-lbl{font-size:.75rem;color:var(--muted2);margin-top:.5rem;line-height:1.5;}
+@media(max-width:768px){.metrics-g{grid-template-columns:repeat(2,1fr);}}
 
-  /* Grid BG */
-  .grid-bg {
-    position: absolute; inset: 0; z-index: 0;
-    background-image:
-      linear-gradient(rgba(79,108,255,0.04) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(79,108,255,0.04) 1px, transparent 1px);
-    background-size: 60px 60px;
-    mask-image: radial-gradient(ellipse at center, black 30%, transparent 80%);
-  }
-  .hero-glow {
-    position: absolute; top: 20%; left: 50%; transform: translateX(-50%);
-    width: 600px; height: 400px;
-    background: radial-gradient(ellipse, rgba(79,108,255,0.12) 0%, transparent 70%);
-    pointer-events: none; z-index: 0;
-  }
-  section > * { position: relative; z-index: 1; }
+/* HOW IT WORKS */
+#how{background:var(--bg2);}
+.how-inner{max-width:1140px;margin:0 auto;padding:7rem 2rem;}
+.how-hd{text-align:center;margin-bottom:5rem;}
+.how-hd .s-sub{margin:0 auto;}
+.timeline{position:relative;display:flex;flex-direction:column;}
+.timeline::before{content:'';position:absolute;left:50%;top:0;bottom:0;width:1px;background:linear-gradient(to bottom,transparent,var(--border2) 10%,var(--border2) 90%,transparent);transform:translateX(-50%);}
+.step{display:grid;grid-template-columns:1fr 80px 1fr;align-items:center;padding:2rem 0;}
+.step:nth-child(odd) .sc{grid-column:1;text-align:right;padding-right:3rem;}
+.step:nth-child(odd) .sn{grid-column:2;}
+.step:nth-child(odd) .sp{grid-column:3;}
+.step:nth-child(even) .sp{grid-column:1;}
+.step:nth-child(even) .sn{grid-column:2;}
+.step:nth-child(even) .sc{grid-column:3;text-align:left;padding-left:3rem;}
+.sn{display:flex;align-items:center;justify-content:center;width:56px;height:56px;background:var(--bg3);border:1px solid var(--border2);border-radius:50%;margin:0 auto;font-size:1.4rem;position:relative;z-index:2;transition:border-color .3s,box-shadow .3s;}
+.step:hover .sn{border-color:var(--accent);box-shadow:0 0 20px var(--glow);}
+.sn-h{border-color:rgba(240,67,106,.4)!important;background:rgba(240,67,106,.08)!important;}
+.step:hover .sn-h{border-color:var(--rose)!important;box-shadow:0 0 20px rgba(240,67,106,.3)!important;}
+.s-num{display:block;font-family:'Space Mono',monospace;font-size:.6rem;color:var(--muted);letter-spacing:.15em;margin-bottom:.4rem;}
+.s-name{font-family:'Bebas Neue',sans-serif;font-size:1.6rem;letter-spacing:.04em;margin-bottom:.6rem;}
+.s-desc{font-size:.82rem;color:var(--muted2);line-height:1.75;font-weight:300;}
+.s-tag{display:inline-block;margin-top:.8rem;border:1px solid var(--border2);padding:.25rem .7rem;font-size:.65rem;letter-spacing:.1em;text-transform:uppercase;color:var(--teal);border-radius:2px;}
+.s-tag-h{color:var(--rose)!important;border-color:rgba(240,67,106,.35)!important;}
+@media(max-width:1024px){
+  .timeline::before{left:28px;}
+  .step{grid-template-columns:56px 1fr;}
+  .step:nth-child(odd) .sc,.step:nth-child(even) .sc{grid-column:2;text-align:left;padding:0 0 0 2rem;}
+  .step:nth-child(odd) .sn,.step:nth-child(even) .sn{grid-column:1;margin:0;}
+  .step:nth-child(odd) .sp,.step:nth-child(even) .sp{display:none;}
+}
 
-  /* VISION */
-  #vision { background: var(--surface); }
-  .vision-inner {
-    display: grid; grid-template-columns: 1fr 1fr; gap: 6rem;
-    max-width: 1100px; width: 100%; align-items: center;
-  }
-  .section-label {
-    font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase;
-    color: var(--accent2); margin-bottom: 1rem;
-  }
-  h2 {
-    font-family: 'Syne', sans-serif; font-weight: 800;
-    font-size: clamp(2rem, 4vw, 3.5rem);
-    line-height: 1.05; letter-spacing: -0.02em;
-    margin-bottom: 1.5rem;
-  }
-  .vision-text p {
-    color: var(--muted); line-height: 1.8; font-size: 0.85rem;
-    margin-bottom: 1rem;
-  }
-  .stat-grid {
-    display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;
-  }
-  .stat-card {
-    background: var(--card); border: 1px solid var(--border);
-    padding: 1.5rem; position: relative; overflow: hidden;
-    clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 0 100%);
-  }
-  .stat-card::before {
-    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
-    background: linear-gradient(90deg, var(--accent), transparent);
-  }
-  .stat-num {
-    font-family: 'Syne', sans-serif; font-size: 2.5rem; font-weight: 800;
-    color: var(--accent); line-height: 1;
-  }
-  .stat-num.green { color: var(--accent2); }
-  .stat-num.pink { color: var(--accent3); }
-  .stat-label { font-size: 0.7rem; color: var(--muted); margin-top: 0.5rem; letter-spacing: 0.05em; }
+/* FEATURES */
+#features{background:var(--bg);}
+.feat-inner{max-width:1140px;margin:0 auto;padding:7rem 2rem;}
+.feat-hd{margin-bottom:4rem;}
+/* 3-col bento: span2=2cols, fc=1col. Rows must each total 3 cols.
+   Row1: span2+fc = 3 | Row2: fc+fc+fc = 3 | Row3: fc+span2 = 3 */
+.bento{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;background:var(--border);border:1px solid var(--border);}
+.fc{background:var(--bg);padding:2.5rem 2rem;position:relative;overflow:hidden;transition:background .3s;}
+.fc::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--accent),var(--teal));transform:scaleX(0);transform-origin:left;transition:transform .4s;}
+.fc:hover{background:var(--bg3);}
+.fc:hover::before{transform:scaleX(1);}
+.span2{grid-column:span 2;}
+.fc-icon{font-size:2rem;margin-bottom:1.2rem;display:block;}
+.fc-title{font-family:'Bebas Neue',sans-serif;font-size:1.3rem;letter-spacing:.04em;margin-bottom:.75rem;}
+.fc-desc{font-size:.8rem;color:var(--muted2);line-height:1.75;font-weight:300;}
+.fc-hl{margin-top:1.2rem;display:inline-flex;align-items:center;gap:.5rem;font-size:.72rem;color:var(--accent);font-family:'Space Mono',monospace;}
+.fc-hl::before{content:'→';}
+@media(max-width:900px){.bento{grid-template-columns:1fr 1fr;}.span2{grid-column:span 1;}}
+@media(max-width:580px){.bento{grid-template-columns:1fr;}}
 
-  /* AGENTS */
-  #agents { flex-direction: column; background: var(--bg); }
-  .agents-header { text-align: center; margin-bottom: 4rem; max-width: 600px; }
-  .agents-header p { color: var(--muted); font-size: 0.85rem; line-height: 1.7; margin-top: 1rem; }
+/* PRICING */
+#pricing{background:var(--bg2);}
+.price-inner{max-width:1140px;margin:0 auto;padding:7rem 2rem;}
+.price-hd{text-align:center;margin-bottom:5rem;}
+.ptoggle{display:inline-flex;align-items:center;background:var(--bg3);border:1px solid var(--border);border-radius:999px;padding:.35rem;margin-top:2rem;}
+.ptbtn{background:none;border:none;cursor:pointer;color:var(--muted);font-family:'DM Sans',sans-serif;font-size:.8rem;padding:.45rem 1.2rem;border-radius:999px;transition:background .2s,color .2s;}
+.ptbtn.on{background:var(--accent);color:#fff;}
+.pcards{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;align-items:start;}
+.pc{background:var(--bg3);border:1px solid var(--border);border-radius:4px;padding:2.5rem 2rem;position:relative;overflow:hidden;transition:border-color .3s,transform .3s,box-shadow .3s;}
+.pc:hover{border-color:var(--border2);transform:translateY(-4px);}
+.pc.hot{border-color:var(--accent);box-shadow:0 0 40px rgba(91,110,245,.15);}
+.pc::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--border);}
+.pc.hot::before{background:linear-gradient(90deg,var(--accent),var(--teal));}
+.pc-badge{position:absolute;top:1.5rem;right:1.5rem;background:var(--accent);color:#fff;font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;padding:.25rem .6rem;border-radius:2px;}
+.pc-tier{font-size:.65rem;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-bottom:1rem;font-family:'Space Mono',monospace;}
+.pc-name{font-family:'Bebas Neue',sans-serif;font-size:1.8rem;letter-spacing:.04em;margin-bottom:.5rem;}
+.pc-val{font-family:'Bebas Neue',sans-serif;font-size:3.5rem;line-height:1;letter-spacing:.02em;}
+.pc-val sup{font-size:1.5rem;vertical-align:top;margin-top:.5rem;}
+.pc-val span{font-family:'DM Sans',sans-serif;font-size:.85rem;font-weight:300;color:var(--muted);}
+.pc-desc{font-size:.78rem;color:var(--muted2);margin:1rem 0 1.5rem;line-height:1.6;}
+.pc-div{height:1px;background:var(--border);margin:1.5rem 0;}
+.pc-list{list-style:none;display:flex;flex-direction:column;gap:.75rem;margin-bottom:2rem;}
+.pc-list li{display:flex;align-items:flex-start;gap:.75rem;font-size:.8rem;color:var(--muted2);line-height:1.5;}
+.pc-list li::before{content:'✓';color:var(--teal);flex-shrink:0;}
+.pc-list li.off{color:var(--muted);opacity:.45;}
+.pc-list li.off::before{content:'○';color:var(--muted);}
+.pc-btn{width:100%;padding:.85rem;background:transparent;border:1px solid var(--border2);color:var(--text);cursor:pointer;font-family:'DM Sans',sans-serif;font-size:.82rem;border-radius:3px;transition:all .2s;}
+.pc-btn:hover{border-color:var(--accent);color:var(--accent);}
+.pc-btn.solid{background:var(--accent);border-color:var(--accent);color:#fff;}
+.pc-btn.solid:hover{background:var(--accentH);}
+@media(max-width:900px){.pcards{grid-template-columns:1fr;max-width:420px;margin:0 auto;}}
 
-  .agents-grid {
-    display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5px;
-    max-width: 1100px; width: 100%;
-    background: var(--border);
-    border: 1px solid var(--border);
-  }
-  .agent-card {
-    background: var(--bg);
-    padding: 2.5rem 2rem; cursor: pointer;
-    transition: background 0.3s;
-    position: relative; overflow: hidden;
-  }
-  .agent-card::after {
-    content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 0;
-    background: var(--accent); opacity: 0.06;
-    transition: height 0.3s;
-  }
-  .agent-card:hover { background: var(--surface); }
-  .agent-card:hover::after { height: 100%; }
-  .agent-number {
-    font-size: 0.65rem; letter-spacing: 0.2em; color: var(--muted);
-    margin-bottom: 1rem; font-family: 'DM Mono', monospace;
-  }
-  .agent-icon { font-size: 2rem; margin-bottom: 1rem; display: block; }
-  .agent-name {
-    font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1.2rem;
-    margin-bottom: 0.5rem; color: var(--text);
-  }
-  .agent-role {
-    font-size: 0.7rem; color: var(--accent); letter-spacing: 0.1em;
-    text-transform: uppercase; margin-bottom: 1rem;
-  }
-  .agent-desc { font-size: 0.8rem; color: var(--muted); line-height: 1.7; }
-  .agent-example {
-    margin-top: 1.5rem; padding: 1rem;
-    background: rgba(79,108,255,0.06); border-left: 2px solid var(--accent);
-    font-size: 0.75rem; color: var(--muted); line-height: 1.6;
-    font-style: italic;
-    max-height: 0; overflow: hidden;
-    transition: max-height 0.4s ease, opacity 0.3s;
-    opacity: 0;
-  }
-  .agent-card:hover .agent-example { max-height: 200px; opacity: 1; }
-  .agent-example strong { color: var(--accent2); font-style: normal; }
+/* TESTIMONIALS */
+#testimonials{background:var(--bg);}
+.testi-inner{max-width:1140px;margin:0 auto;padding:7rem 2rem;}
+.testi-hd{text-align:center;margin-bottom:4rem;}
+.tgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;}
+.tc{background:var(--bg3);border:1px solid var(--border);padding:2rem;border-radius:4px;position:relative;overflow:hidden;transition:border-color .3s,transform .3s;}
+.tc:hover{border-color:var(--border2);transform:translateY(-3px);}
+.tc::before{content:'"';position:absolute;top:-.5rem;right:1.5rem;font-family:'Bebas Neue',sans-serif;font-size:8rem;line-height:1;color:var(--accent);opacity:.06;pointer-events:none;}
+.tc-stars{color:var(--teal);font-size:.85rem;margin-bottom:1rem;}
+.tc-q{font-size:.85rem;color:var(--muted2);line-height:1.8;margin-bottom:1.5rem;font-weight:300;font-style:italic;}
+.tc-auth{display:flex;align-items:center;gap:.9rem;}
+.tc-av{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--teal));display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:1rem;color:#fff;flex-shrink:0;}
+.tc-name{font-size:.82rem;font-weight:500;}
+.tc-role{font-size:.72rem;color:var(--muted);margin-top:.1rem;}
+@media(max-width:900px){.tgrid{grid-template-columns:1fr 1fr;}}
+@media(max-width:580px){.tgrid{grid-template-columns:1fr;}}
 
-  /* FLOW DIAGRAM */
-  #flow { flex-direction: column; background: var(--surface); }
-  .flow-title { text-align: center; margin-bottom: 4rem; }
-  .flow-diagram {
-    max-width: 900px; width: 100%;
-    display: flex; flex-direction: column; gap: 0;
-  }
-  .flow-row { display: flex; align-items: center; justify-content: center; gap: 0; }
-  .flow-node {
-    background: var(--card); border: 1px solid var(--border);
-    padding: 1.5rem 2rem; flex: 1; max-width: 260px;
-    position: relative;
-    clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px));
-    transition: border-color 0.3s, transform 0.3s;
-    cursor: default;
-  }
-  .flow-node:hover { border-color: var(--accent); transform: scale(1.03); }
-  .flow-node-num { font-size: 0.6rem; color: var(--muted); letter-spacing: 0.15em; margin-bottom: 0.5rem; }
-  .flow-node-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.95rem; }
-  .flow-node-sub { font-size: 0.7rem; color: var(--muted); margin-top: 0.25rem; }
-  .flow-node.active-node { border-color: var(--accent2); }
-  .flow-node.active-node .flow-node-title { color: var(--accent2); }
+/* ABOUT */
+#about{background:var(--bg2);}
+.about-inner{max-width:1140px;margin:0 auto;padding:7rem 2rem;display:grid;grid-template-columns:1fr 1fr;gap:6rem;align-items:center;}
+.orbit{position:relative;aspect-ratio:1;max-width:420px;}
+.ring{position:absolute;inset:0;border:1px solid var(--border2);border-radius:50%;animation:spin 25s linear infinite;}
+.ring2{position:absolute;inset:15%;border:1px dashed rgba(0,212,170,.2);border-radius:50%;animation:spin 18s linear infinite reverse;}
+.ring3{position:absolute;inset:30%;border:1px solid rgba(91,110,245,.2);border-radius:50%;animation:spin 12s linear infinite;}
+@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+.odot{position:absolute;width:10px;height:10px;border-radius:50%;}
+.od1{top:2%;left:50%;transform:translateX(-50%);background:var(--accent);box-shadow:0 0 12px var(--glow);}
+.od2{top:50%;right:2%;transform:translateY(-50%);background:var(--teal);box-shadow:0 0 12px rgba(0,212,170,.4);}
+.od3{bottom:2%;left:50%;transform:translateX(-50%);background:var(--rose);}
+.od4{top:50%;left:2%;transform:translateY(-50%);background:var(--accent);box-shadow:0 0 12px var(--glow);}
+.orbit-c{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;}
+.oc-logo{font-family:'Bebas Neue',sans-serif;font-size:2rem;background:linear-gradient(135deg,var(--accent),var(--teal));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:.4rem;}
+.oc-yr{font-size:.7rem;color:var(--muted);letter-spacing:.2em;}
+.about-txt p{color:var(--muted2);font-size:.88rem;line-height:1.85;margin-bottom:1.2rem;font-weight:300;}
+.pillars{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:2rem;}
+.pillar{background:var(--bg3);border:1px solid var(--border);padding:1.25rem;border-radius:3px;transition:border-color .3s;}
+.pillar:hover{border-color:var(--accent);}
+.pl-icon{font-size:1.2rem;margin-bottom:.5rem;}
+.pl-title{font-family:'Bebas Neue',sans-serif;font-size:1rem;letter-spacing:.06em;margin-bottom:.3rem;}
+.pl-desc{font-size:.74rem;color:var(--muted);line-height:1.5;}
+@media(max-width:900px){.about-inner{grid-template-columns:1fr;}.orbit{max-width:300px;margin:0 auto;}}
 
-  .flow-arrow {
-    width: 60px; display: flex; align-items: center; justify-content: center;
-    color: var(--accent); font-size: 1.2rem; flex-shrink: 0;
-  }
-  .flow-down {
-    display: flex; justify-content: center; align-items: center;
-    color: var(--accent); font-size: 1.5rem; padding: 0.75rem 0;
-  }
-  .flow-row.reverse { flex-direction: row-reverse; }
-  .flow-row.reverse .flow-arrow { transform: scaleX(-1); }
+/* CONTACT */
+#contact{background:var(--bg);}
+.contact-inner{max-width:1140px;margin:0 auto;padding:7rem 2rem;display:grid;grid-template-columns:1fr 1fr;gap:6rem;align-items:start;}
+.ci p{color:var(--muted2);font-size:.88rem;line-height:1.85;margin-bottom:2rem;font-weight:300;}
+.cdetails{display:flex;flex-direction:column;gap:1.2rem;}
+.citem{display:flex;align-items:flex-start;gap:1rem;}
+.cicon{width:40px;height:40px;border:1px solid var(--border2);display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;color:var(--accent);background:var(--bg3);border-radius:3px;}
+.ci-lbl{font-size:.68rem;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;}
+.ci-val{font-size:.85rem;color:var(--text);margin-top:.2rem;}
+.cform{background:var(--bg3);border:1px solid var(--border);padding:2.5rem;border-radius:4px;}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
+.fg{margin-bottom:1.2rem;}
+.fg label{display:block;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:.5rem;}
+.fg input,.fg select,.fg textarea{width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);font-family:'DM Sans',sans-serif;font-size:.85rem;padding:.8rem 1rem;border-radius:3px;transition:border-color .2s,box-shadow .2s;outline:none;resize:vertical;}
+.fg input:focus,.fg select:focus,.fg textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(91,110,245,.1);}
+.fg textarea{min-height:120px;}
+.fg select option{background:var(--bg3);}
+.fsub{width:100%;padding:1rem;background:var(--accent);color:#fff;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:.85rem;font-weight:500;border-radius:3px;transition:background .2s,transform .2s;margin-top:.5rem;}
+.fsub:hover{background:var(--accentH);transform:translateY(-2px);}
+@media(max-width:900px){.contact-inner{grid-template-columns:1fr;}.frow{grid-template-columns:1fr;}}
 
-  /* BENEFITS */
-  #benefits { flex-direction: column; background: var(--bg); }
-  .benefits-header { text-align: center; margin-bottom: 4rem; max-width: 600px; }
-  .benefits-grid {
-    display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem;
-    max-width: 1100px; width: 100%;
-  }
-  .benefit-card {
-    background: var(--card); border: 1px solid var(--border);
-    padding: 2rem 1.5rem;
-    clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 0 100%);
-    transition: border-color 0.3s, transform 0.3s;
-  }
-  .benefit-card:hover { border-color: var(--accent2); transform: translateY(-4px); }
-  .benefit-icon { font-size: 1.8rem; margin-bottom: 1rem; }
-  .benefit-title {
-    font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1rem;
-    margin-bottom: 0.75rem;
-  }
-  .benefit-desc { font-size: 0.78rem; color: var(--muted); line-height: 1.7; }
-
-  /* MARKET */
-  #market { background: var(--surface); }
-  .market-inner {
-    display: grid; grid-template-columns: 1fr 1fr; gap: 6rem;
-    max-width: 1100px; width: 100%; align-items: start;
-  }
-  .target-list { list-style: none; margin-top: 1.5rem; }
-  .target-list li {
-    display: flex; align-items: flex-start; gap: 1rem;
-    padding: 1rem 0; border-bottom: 1px solid var(--border);
-    font-size: 0.82rem; color: var(--muted); line-height: 1.5;
-  }
-  .target-list li span { color: var(--accent); font-size: 1rem; flex-shrink: 0; margin-top: 1px; }
-  .revenue-cards { display: flex; flex-direction: column; gap: 1rem; margin-top: 1.5rem; }
-  .rev-card {
-    background: var(--card); border: 1px solid var(--border);
-    padding: 1.25rem 1.5rem; display: flex; align-items: center; gap: 1.5rem;
-    clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 0 100%);
-  }
-  .rev-icon { font-size: 1.5rem; }
-  .rev-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.9rem; }
-  .rev-desc { font-size: 0.75rem; color: var(--muted); margin-top: 0.2rem; }
-
-  /* STACK */
-  #stack { flex-direction: column; background: var(--bg); }
-  .stack-header { text-align: center; margin-bottom: 4rem; }
-  .stack-grid {
-    display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px;
-    max-width: 1100px; width: 100%;
-    background: var(--border);
-    border: 1px solid var(--border);
-  }
-  .stack-cell {
-    background: var(--bg); padding: 2rem 1.5rem;
-    border-bottom: 1px solid var(--border);
-  }
-  .stack-layer {
-    font-size: 0.6rem; letter-spacing: 0.15em; text-transform: uppercase;
-    color: var(--accent3); margin-bottom: 0.75rem;
-  }
-  .stack-item {
-    display: flex; align-items: center; gap: 0.5rem;
-    font-size: 0.78rem; color: var(--muted); margin-bottom: 0.4rem;
-  }
-  .stack-item::before { content: '›'; color: var(--accent); }
-
-  /* CTA */
-  #cta {
-    background: var(--surface); flex-direction: column; text-align: center;
-    min-height: 50vh;
-  }
-  #cta h2 { font-size: clamp(2.5rem, 5vw, 4.5rem); margin-bottom: 1.5rem; }
-  #cta p { color: var(--muted); max-width: 500px; font-size: 0.85rem; line-height: 1.8; margin-bottom: 3rem; }
-  .cta-buttons { display: flex; gap: 1.5rem; justify-content: center; }
-  .btn-primary {
-    background: var(--accent); color: #fff; border: none; cursor: pointer;
-    font-family: 'DM Mono', monospace; font-size: 0.75rem; letter-spacing: 0.1em; text-transform: uppercase;
-    padding: 1rem 2.5rem;
-    clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px));
-    transition: background 0.2s, transform 0.2s;
-  }
-  .btn-primary:hover { background: #6680ff; transform: translateY(-2px); }
-  .btn-outline {
-    background: transparent; color: var(--text);
-    border: 1px solid var(--border); cursor: pointer;
-    font-family: 'DM Mono', monospace; font-size: 0.75rem; letter-spacing: 0.1em; text-transform: uppercase;
-    padding: 1rem 2.5rem;
-    transition: border-color 0.2s, color 0.2s;
-  }
-  .btn-outline:hover { border-color: var(--accent); color: var(--accent); }
-
-  /* FOOTER */
-  footer {
-    text-align: center; padding: 2rem;
-    border-top: 1px solid var(--border);
-    font-size: 0.7rem; color: var(--muted); letter-spacing: 0.05em;
-  }
-
-  /* SCROLL ANIMATIONS */
-  .reveal {
-    opacity: 0; transform: translateY(30px);
-    transition: opacity 0.7s ease, transform 0.7s ease;
-  }
-  .reveal.visible { opacity: 1; transform: none; }
-  .reveal-delay-1 { transition-delay: 0.1s; }
-  .reveal-delay-2 { transition-delay: 0.2s; }
-  .reveal-delay-3 { transition-delay: 0.3s; }
-  .reveal-delay-4 { transition-delay: 0.4s; }
-
-  /* TAG */
-  .tag {
-    display: inline-block;
-    border: 1px solid var(--accent); color: var(--accent);
-    font-size: 0.65rem; letter-spacing: 0.15em; text-transform: uppercase;
-    padding: 0.3rem 0.75rem; margin-bottom: 1rem;
-  }
-
-  /* Scrollspy active */
-  .nav-links a.active { color: var(--accent); }
-
-  @media (max-width: 900px) {
-    nav { padding: 1rem 1.5rem; }
-    .nav-links { display: none; }
-    section { padding: 6rem 1.5rem 4rem; }
-    .vision-inner, .market-inner { grid-template-columns: 1fr; gap: 3rem; }
-    .agents-grid { grid-template-columns: 1fr 1fr; }
-    .benefits-grid { grid-template-columns: 1fr 1fr; }
-    .stack-grid { grid-template-columns: 1fr 1fr; }
-  }
-  @media (max-width: 600px) {
-    .agents-grid, .benefits-grid, .stack-grid { grid-template-columns: 1fr; }
-    .stat-grid { grid-template-columns: 1fr 1fr; }
-    h1 { font-size: 3rem; }
-  }
+/* FOOTER */
+footer{background:var(--bg2);border-top:1px solid var(--border);padding:4rem 2rem 2rem;position:relative;z-index:1;}
+.foot-g{max-width:1140px;margin:0 auto;display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:4rem;margin-bottom:3rem;}
+.fb-name{font-family:'Bebas Neue',sans-serif;font-size:2rem;letter-spacing:.08em;margin-bottom:1rem;}
+.fb-name em{color:var(--accent);font-style:normal;}
+.fb-tag{font-size:.82rem;color:var(--muted);line-height:1.7;max-width:260px;margin-bottom:1.5rem;}
+.socials{display:flex;gap:.75rem;}
+.soc{width:36px;height:36px;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;color:var(--muted);text-decoration:none;font-size:.85rem;border-radius:3px;transition:border-color .2s,color .2s;}
+.soc:hover{border-color:var(--accent);color:var(--accent);}
+.fc-head{font-family:'Space Mono',monospace;font-size:.65rem;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);margin-bottom:1.2rem;}
+.flinks{list-style:none;display:flex;flex-direction:column;gap:.75rem;}
+.flinks a{color:var(--muted2);text-decoration:none;font-size:.82rem;transition:color .2s;}
+.flinks a:hover{color:var(--text);}
+.foot-bot{max-width:1140px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;border-top:1px solid var(--border);padding-top:2rem;font-size:.72rem;color:var(--muted);}
+.foot-bot a{color:var(--muted);text-decoration:none;}
+.foot-bot a:hover{color:var(--accent);}
+@media(max-width:900px){.foot-g{grid-template-columns:1fr 1fr;gap:2.5rem;}.foot-bot{flex-direction:column;gap:1rem;text-align:center;}}
+@media(max-width:580px){.foot-g{grid-template-columns:1fr;}}
 </style>
 </head>
 <body>
 
-<nav>
-  <div class="nav-logo">Lead<span>Flow</span> AI</div>
+<div class="cur" id="cur"></div>
+<div class="cur-ring" id="curR"></div>
+
+<div class="mob-menu" id="mobMenu">
+  <button class="mob-close" id="mobClose">✕</button>
+  <a href="#how" onclick="closeMob()">How It Works</a>
+  <a href="#features" onclick="closeMob()">Features</a>
+  <a href="#pricing" onclick="closeMob()">Pricing</a>
+  <a href="#testimonials" onclick="closeMob()">Customers</a>
+  <a href="#about" onclick="closeMob()">About</a>
+  <a href="#contact" onclick="closeMob()">Contact</a>
+</div>
+
+<nav id="nav">
+  <div class="nav-logo"><em>Prospera</em> AI</div>
   <div class="nav-links">
-    <a href="#vision">Vision</a>
-    <a href="#agents">Agents</a>
-    <a href="#flow">Flow</a>
-    <a href="#benefits">Benefits</a>
-    <a href="#market">Market</a>
-    <a href="#stack">Stack</a>
+    <a href="#how">How It Works</a>
+    <a href="#features">Features</a>
+    <a href="#pricing">Pricing</a>
+    <a href="#testimonials">Customers</a>
+    <a href="#about">About</a>
+    <a href="#contact" class="nav-cta">Get Started</a>
   </div>
+  <button class="hamburger" id="hamBtn"><span></span><span></span><span></span></button>
 </nav>
 
 <!-- HERO -->
 <section id="hero">
-  <div class="grid-bg"></div>
-  <div class="hero-glow"></div>
-  <div class="hero-eyebrow">Autonomous Sales Intelligence</div>
-  <h1>
-    <span class="line1">Lead<span class="accent-word">Flow</span></span>
-    <span class="line2">AI</span>
+  <div class="h-grid"></div>
+  <div class="h-orb1"></div>
+  <div class="h-orb2"></div>
+  <div class="h-badge"><span class="h-dot"></span>Now Live — Autonomous Sales Intelligence</div>
+  <h1 class="h-title">
+    <span class="la">Close More</span>
+    <span class="lb">Deals Faster</span>
+    <span class="lc">Automatically</span>
   </h1>
-  <p class="hero-sub">From Cold Data to Closed Deals — powered by a coordinated team of specialized AI agents working 24/7.</p>
-  <button class="hero-cta" onclick="document.getElementById('vision').scrollIntoView({behavior:'smooth'})">
-    Explore the Platform →
-  </button>
-</section>
-
-<!-- VISION -->
-<section id="vision">
-  <div class="vision-inner">
-    <div class="vision-text reveal">
-      <div class="section-label">The Vision</div>
-      <h2>Your Entire Sales Team.<br>Automated.</h2>
-      <p>LeadFlow AI is a full-cycle, autonomous sales automation platform that deploys a coordinated team of specialized AI agents to handle every stage of the sales pipeline — from discovering prospects to closing deals and kicking off delivery.</p>
-      <p>Instead of hiring a large sales team to cold-call thousands of leads, intelligent agents work around the clock — finding businesses, reaching out on WhatsApp, having real conversations, booking calls, conducting discovery calls by voice, sending invoices, and creating project tickets.</p>
-    </div>
-    <div class="stat-grid reveal reveal-delay-2">
-      <div class="stat-card">
-        <div class="stat-num">5,000+</div>
-        <div class="stat-label">prospects reached per day vs. 50–100 manually</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-num green">60–80%</div>
-        <div class="stat-label">lower cost per qualified lead</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-num pink">21×</div>
-        <div class="stat-label">more likely to qualify leads responded to in &lt;5 min</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-num">24/7</div>
-        <div class="stat-label">operations — across all time zones, non-stop</div>
-      </div>
+  <p class="h-sub">Prospera AI deploys a team of intelligent agents that prospect, engage, qualify, and close — so your human team only shows up when the deal is already warm.</p>
+  <div class="h-actions">
+    <button class="btn-p" onclick="goto('#contact')">Start Free Trial</button>
+    <button class="btn-g" onclick="goto('#how')">See How It Works ↓</button>
+  </div>
+  <div class="h-logos">
+    <p>Trusted by growing businesses worldwide</p>
+    <div class="logos-row">
+      <span class="logo-item">NexaGroup</span>
+      <span class="logo-item">UrbanRealty</span>
+      <span class="logo-item">SkyDigital</span>
+      <span class="logo-item">Launchpad</span>
+      <span class="logo-item">CoreSales</span>
     </div>
   </div>
+  <div class="scroll-ind"><span>Scroll</span><div class="scroll-line"></div></div>
 </section>
 
-<!-- AGENTS -->
-<section id="agents">
-  <div class="agents-header reveal">
-    <div class="section-label">7-Agent Architecture</div>
-    <h2>Meet Your AI Sales Team</h2>
-    <p>Seven specialized agents, each with a distinct role, sharing context seamlessly — so every interaction builds on the last. A human supervisor steps in whenever the situation demands it.</p>
+<!-- METRICS -->
+<div class="metrics">
+  <div class="metrics-g">
+    <div class="reveal d1"><div class="m-val">5,000+</div><div class="m-lbl">Prospects reached<br>per day, per user</div></div>
+    <div class="reveal d2"><div class="m-val">80%</div><div class="m-lbl">Reduction in<br>cost per lead</div></div>
+    <div class="reveal d3"><div class="m-val">21×</div><div class="m-lbl">Better qualification<br>with instant response</div></div>
+    <div class="reveal d4"><div class="m-val">24/7</div><div class="m-lbl">Sales pipeline running<br>across all time zones</div></div>
   </div>
-  <div class="agents-grid reveal reveal-delay-1">
-    <div class="agent-card">
-      <div class="agent-number">AGENT_01</div>
-      <span class="agent-icon">🔍</span>
-      <div class="agent-name">The Prospector</div>
-      <div class="agent-role">Data Scraping & Lead Discovery</div>
-      <div class="agent-desc">Scours Google Maps, LinkedIn, Google Ads, Meta Ads, email inboxes, business directories, and industry databases to find businesses matching your Ideal Customer Profile — extracting names, phones, emails, websites, and location data into a structured CRM list.</div>
-      <div class="agent-example"><strong>Example:</strong> Pulls warm leads from your Google Ads audience, Meta lead forms, and cold prospects from Google Maps — all unified into a single deduplicated list overnight.</div>
+</div>
+
+<!-- HOW IT WORKS -->
+<section id="how">
+  <div class="how-inner">
+    <div class="how-hd reveal">
+      <div class="s-label">Process</div>
+      <h2 class="s-title">From Cold Lead to<br><span class="tt">Closed Deal</span></h2>
+      <p class="s-sub">Seven specialized AI agents — including a Human Supervisor — each mastering one stage of your pipeline, working in perfect sync around the clock.</p>
     </div>
-    <div class="agent-card">
-      <div class="agent-number">AGENT_02</div>
-      <span class="agent-icon">📡</span>
-      <div class="agent-name">The Outreacher</div>
-      <div class="agent-role">Multi-Channel First-Touch Outreach</div>
-      <div class="agent-desc">Initiates personalized outreach across WhatsApp, email, and Telegram — referencing each prospect's business name, industry, and a specific pain point. Sends in smart batches, respects timing windows, and manages follow-ups automatically across all channels.</div>
-      <div class="agent-example"><strong>Example:</strong> Sends a cold email, follows up on WhatsApp 24 hours later, and drops a Telegram message if no response — all with the same personalized context, zero manual effort.</div>
-    </div>
-    <div class="agent-card">
-      <div class="agent-number">AGENT_03</div>
-      <span class="agent-icon">🧠</span>
-      <div class="agent-name">The Engager</div>
-      <div class="agent-role">Multi-Channel Conversation & Booking</div>
-      <div class="agent-desc">When a prospect replies — on WhatsApp, email, or Telegram — this agent takes over. It understands context across channels, answers questions, handles objections, and guides the conversation toward booking a discovery call. Shares links, brochures, and calendar slots within the same thread.</div>
-      <div class="agent-example"><strong>Example:</strong> Prospect replies on Telegram asking about cost → agent responds with packages, shares a portfolio link, and suggests three available time slots — all without switching platforms.</div>
-    </div>
-    <div class="agent-card">
-      <div class="agent-number">AGENT_04</div>
-      <span class="agent-icon">📞</span>
-      <div class="agent-name">The Caller</div>
-      <div class="agent-role">AI Voice Discovery & Qualification</div>
-      <div class="agent-desc">Places an AI-powered voice call at the scheduled time, conducting a structured discovery conversation: understanding needs, budget, timeline, and goals — then recommending a package or escalating to the Human Supervisor for complex deals.</div>
-      <div class="agent-example"><strong>Example:</strong> Asks about online presence and goals, then recommends "Premium Website + Online Ordering" — or flags the deal for human review if the budget or scope is outside standard parameters.</div>
-    </div>
-    <div class="agent-card">
-      <div class="agent-number">AGENT_05</div>
-      <span class="agent-icon">👤</span>
-      <div class="agent-name">The Supervisor</div>
-      <div class="agent-role">Human-in-the-Loop Oversight</div>
-      <div class="agent-desc">When a deal requires human judgment — complex requirements, high-value accounts, sensitive objections, or edge cases — the Supervisor steps in. They receive a full brief: conversation history, call transcript, lead score, and recommended next action. Once resolved, the pipeline resumes automatically.</div>
-      <div class="agent-example"><strong>Example:</strong> A prospect requests a custom enterprise integration. The Supervisor is notified with a full brief, jumps in to negotiate, then hands back to the Closer once terms are agreed.</div>
-    </div>
-    <div class="agent-card">
-      <div class="agent-number">AGENT_06</div>
-      <span class="agent-icon">📋</span>
-      <div class="agent-name">The Closer</div>
-      <div class="agent-role">Proposal, Invoice & Confirmation</div>
-      <div class="agent-desc">Once the prospect says yes, immediately generates a professional email with a proposal summary, pricing breakdown, and payment invoice — integrated with Stripe or Razorpay. Handles follow-ups on unpaid invoices.</div>
-      <div class="agent-example"><strong>Example:</strong> Within 60 seconds of verbal confirmation, prospect receives a branded proposal PDF with a "Pay Now" button.</div>
-    </div>
-    <div class="agent-card">
-      <div class="agent-number">AGENT_07</div>
-      <span class="agent-icon">🚀</span>
-      <div class="agent-name">The Dispatcher</div>
-      <div class="agent-role">Internal Handoff & Project Kickoff</div>
-      <div class="agent-desc">Upon payment confirmation, automatically creates a project ticket in Jira, Trello, Asana, or ClickUp — with all client details, discovery call transcript requirements, selected package, and timeline. Delivery team is notified instantly.</div>
-      <div class="agent-example"><strong>Example:</strong> Jira ticket created: "New Project — Bella's Italian Kitchen — Premium Website — Due: 3 weeks — Requirements: [auto-populated]"</div>
+    <div class="timeline">
+
+      <div class="step reveal">
+        <div class="sc"><span class="s-num">AGENT 01</span><div class="s-name">The Prospector</div><div class="s-desc">Scours Google Maps, LinkedIn, Google Ads, Meta Ads, email inboxes, and business directories to find prospects matching your Ideal Customer Profile — extracting contact details into a clean, deduplicated CRM list automatically.</div><span class="s-tag">Lead Discovery</span></div>
+        <div class="sn">🔍</div>
+        <div class="sp"></div>
+      </div>
+
+      <div class="step reveal">
+        <div class="sp"></div>
+        <div class="sn">📡</div>
+        <div class="sc"><span class="s-num">AGENT 02</span><div class="s-name">The Outreacher</div><div class="s-desc">Sends personalized first-touch messages across WhatsApp, email, and Telegram — referencing each prospect's business, industry pain points, and optimal timing. Manages multi-channel follow-ups automatically until there's a reply.</div><span class="s-tag">Multi-Channel Outreach</span></div>
+      </div>
+
+      <div class="step reveal">
+        <div class="sc"><span class="s-num">AGENT 03</span><div class="s-name">The Engager</div><div class="s-desc">When a prospect replies — on WhatsApp, email, or Telegram — this agent takes over. It understands context across channels, answers questions, handles objections, shares case studies, and books a discovery call directly in your calendar.</div><span class="s-tag">Multi-Channel Engagement</span></div>
+        <div class="sn">🧠</div>
+        <div class="sp"></div>
+      </div>
+
+      <div class="step reveal">
+        <div class="sp"></div>
+        <div class="sn">📞</div>
+        <div class="sc"><span class="s-num">AGENT 04</span><div class="s-name">The Caller</div><div class="s-desc">Conducts AI-powered voice discovery calls — understanding the prospect's needs, budget, and timeline. Recommends the right package or escalates to the Human Supervisor for complex or high-value deals.</div><span class="s-tag">Voice Qualification</span></div>
+      </div>
+
+      <div class="step reveal">
+        <div class="sc"><span class="s-num">AGENT 05</span><div class="s-name">The Supervisor</div><div class="s-desc">When a deal requires human judgment — complex requirements, high-value accounts, or sensitive objections — the Supervisor steps in. They receive a full brief with conversation history, call transcript, lead score, and a recommended next action. Once resolved, the pipeline resumes automatically.</div><span class="s-tag s-tag-h">Human-in-the-Loop</span></div>
+        <div class="sn sn-h">👤</div>
+        <div class="sp"></div>
+      </div>
+
+      <div class="step reveal">
+        <div class="sp"></div>
+        <div class="sn">📋</div>
+        <div class="sc"><span class="s-num">AGENT 06</span><div class="s-name">The Closer</div><div class="s-desc">The moment a prospect says yes, a branded proposal PDF and payment invoice are delivered to their inbox — with a "Pay Now" button. Stripe and Razorpay integrated. Follow-ups handled automatically.</div><span class="s-tag">Proposals & Invoicing</span></div>
+      </div>
+
+      <div class="step reveal">
+        <div class="sc"><span class="s-num">AGENT 07</span><div class="s-name">The Dispatcher</div><div class="s-desc">On payment confirmation, a project ticket is auto-created in Jira, Trello, or ClickUp — populated with the client's details, requirements from the call transcript, and timeline. Your delivery team starts the same day.</div><span class="s-tag">Project Kickoff</span></div>
+        <div class="sn">🚀</div>
+        <div class="sp"></div>
+      </div>
+
     </div>
   </div>
 </section>
 
-<!-- FLOW -->
-<section id="flow">
-  <div class="flow-title reveal">
-    <div class="section-label">Complete Pipeline</div>
-    <h2>The Deal Flow at a Glance</h2>
-  </div>
-  <div class="flow-diagram reveal reveal-delay-1">
-    <div class="flow-row">
-      <div class="flow-node">
-        <div class="flow-node-num">01</div>
-        <div class="flow-node-title">🔍 Prospector</div>
-        <div class="flow-node-sub">Scrapes & builds lead list</div>
-      </div>
-      <div class="flow-arrow">→</div>
-      <div class="flow-node">
-        <div class="flow-node-num">02</div>
-        <div class="flow-node-title">📡 Outreacher</div>
-        <div class="flow-node-sub">Email, WhatsApp, Telegram</div>
-      </div>
-      <div class="flow-arrow">→</div>
-      <div class="flow-node active-node">
-        <div class="flow-node-num">03</div>
-        <div class="flow-node-title">🧠 Engager</div>
-        <div class="flow-node-sub">Converses & books calls</div>
-      </div>
+<div class="divider"></div>
+
+<!-- FEATURES -->
+<section id="features">
+  <div class="feat-inner">
+    <div class="feat-hd reveal">
+      <div class="s-label">Features</div>
+      <h2 class="s-title">Everything Your<br><span class="ta">Pipeline Needs</span></h2>
+      <p class="s-sub">One unified platform. No Zapier duct-tape. No switching between 7 tools. Every agent shares context seamlessly.</p>
     </div>
-    <div class="flow-down">↓</div>
-    <div class="flow-row">
-      <div class="flow-node active-node">
-        <div class="flow-node-num">04</div>
-        <div class="flow-node-title">📞 Caller</div>
-        <div class="flow-node-sub">Voice discovery & qualification</div>
+    <div class="bento">
+      <div class="fc span2 reveal d1">
+        <span class="fc-icon">🔗</span>
+        <div class="fc-title">Unified Agent Context</div>
+        <div class="fc-desc">Unlike stitching together point solutions, Prospera AI's agents share a single memory. The voice caller knows exactly what was said in the WhatsApp thread. The invoice agent knows what was agreed on the call. Every agent builds on the last, creating a seamless experience for your prospects.</div>
+        <div class="fc-hl">One platform, one subscription, zero context loss</div>
       </div>
-      <div class="flow-arrow">→</div>
-      <div class="flow-node" style="border-color:var(--accent3);">
-        <div class="flow-node-num">05</div>
-        <div class="flow-node-title" style="color:var(--accent3);">👤 Supervisor</div>
-        <div class="flow-node-sub">Human-in-the-loop (when needed)</div>
+      <div class="fc reveal d2">
+        <span class="fc-icon">📡</span>
+        <div class="fc-title">Multi-Channel Outreach</div>
+        <div class="fc-desc">Reach prospects on WhatsApp, email, and Telegram — all from one campaign. The Outreacher sequences messages intelligently across every channel with zero manual effort.</div>
+        <div class="fc-hl">WhatsApp · Email · Telegram</div>
       </div>
-      <div class="flow-arrow">→</div>
-      <div class="flow-node">
-        <div class="flow-node-num">06</div>
-        <div class="flow-node-title">📋 Closer</div>
-        <div class="flow-node-sub">Sends invoice & proposal</div>
+      <div class="fc reveal d3">
+        <span class="fc-icon">👤</span>
+        <div class="fc-title">Human-in-the-Loop</div>
+        <div class="fc-desc">The Supervisor steps in for complex deals or edge cases — armed with a full brief: conversation history, transcript, lead score, and recommended action. Pipeline resumes automatically.</div>
+        <div class="fc-hl">AI handles volume · Humans handle nuance</div>
       </div>
-    </div>
-    <div class="flow-down">↓</div>
-    <div class="flow-row" style="justify-content:flex-start; padding-left: calc(50% - 130px);">
-      <div class="flow-node active-node" style="max-width:260px;">
-        <div class="flow-node-num">07</div>
-        <div class="flow-node-title">🚀 Dispatcher</div>
-        <div class="flow-node-sub">Creates project ticket</div>
+      <div class="fc reveal d4">
+        <span class="fc-icon">🎙️</span>
+        <div class="fc-title">AI Voice Calls</div>
+        <div class="fc-desc">Realistic, structured discovery calls conducted by AI. Full transcripts generated. Complex deals escalated to the Supervisor with a complete brief already prepared.</div>
+        <div class="fc-hl">Powered by Vapi + ElevenLabs</div>
+      </div>
+      <div class="fc reveal d5">
+        <span class="fc-icon">📊</span>
+        <div class="fc-title">Pipeline Analytics</div>
+        <div class="fc-desc">Every interaction logged, every conversation transcribed, every deal stage tracked. Know exactly why deals are won or lost — and let the system optimize itself over time.</div>
+        <div class="fc-hl">Real-time dashboard & reporting</div>
+      </div>
+      <div class="fc reveal d1">
+        <span class="fc-icon">🔌</span>
+        <div class="fc-title">CRM & PM Integrations</div>
+        <div class="fc-desc">Plug into HubSpot, Salesforce, Jira, ClickUp, Asana, Trello, Stripe, and Razorpay out of the box. Your existing stack, supercharged.</div>
+        <div class="fc-hl">15+ native integrations</div>
+      </div>
+      <div class="fc span2 reveal d2">
+        <span class="fc-icon">🤖</span>
+        <div class="fc-title">Self-Optimizing Campaigns</div>
+        <div class="fc-desc">Prospera AI learns from every campaign — which messages get the best response rates, which call scripts close faster, which lead sources bring the highest-value customers. Over time, your pipeline gets smarter without any manual tuning. It's not just automation — it's acceleration.</div>
+        <div class="fc-hl">Continuous learning from your pipeline data</div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- BENEFITS -->
-<section id="benefits">
-  <div class="benefits-header reveal">
-    <div class="section-label">Key Benefits</div>
-    <h2>Why LeadFlow AI Wins</h2>
-  </div>
-  <div class="benefits-grid">
-    <div class="benefit-card reveal reveal-delay-1">
-      <div class="benefit-icon">⚡</div>
-      <div class="benefit-title">Massive Scale, Tiny Team</div>
-      <div class="benefit-desc">A single person can run outreach to thousands of prospects daily. LeadFlow AI reaches 5,000+ while maintaining personalized conversations.</div>
-    </div>
-    <div class="benefit-card reveal reveal-delay-2">
-      <div class="benefit-icon">🌐</div>
-      <div class="benefit-title">24/7 Operations</div>
-      <div class="benefit-desc">AI agents don't sleep, take lunch breaks, or call in sick. Your sales pipeline runs around the clock, across all time zones.</div>
-    </div>
-    <div class="benefit-card reveal reveal-delay-3">
-      <div class="benefit-icon">💸</div>
-      <div class="benefit-title">Lower Cost Per Lead</div>
-      <div class="benefit-desc">By eliminating large SDR teams, the cost of acquiring each qualified lead drops by 60–80%.</div>
-    </div>
-    <div class="benefit-card reveal reveal-delay-4">
-      <div class="benefit-icon">⏱</div>
-      <div class="benefit-title">Faster Speed-to-Lead</div>
-      <div class="benefit-desc">AI agents respond in seconds — making you 21× more likely to qualify leads compared to 5-minute response windows.</div>
-    </div>
-    <div class="benefit-card reveal reveal-delay-1">
-      <div class="benefit-icon">✅</div>
-      <div class="benefit-title">Consistent Quality</div>
-      <div class="benefit-desc">Every prospect gets the same professional, well-crafted experience. No bad days, no forgotten follow-ups, no inconsistent messaging.</div>
-    </div>
-    <div class="benefit-card reveal reveal-delay-2">
-      <div class="benefit-icon">📊</div>
-      <div class="benefit-title">Full Pipeline Visibility</div>
-      <div class="benefit-desc">Every interaction is logged, transcribed, and analyzed. You see exactly where each lead is and why deals are won or lost.</div>
-    </div>
-    <div class="benefit-card reveal reveal-delay-3">
-      <div class="benefit-icon">🤝</div>
-      <div class="benefit-title">Seamless Human Handoff</div>
-      <div class="benefit-desc">AI handles the volume; your team handles the relationships. Humans step in only when the deal is warm and qualified.</div>
-    </div>
-    <div class="benefit-card reveal reveal-delay-4">
-      <div class="benefit-icon">📈</div>
-      <div class="benefit-title">Data-Driven Optimization</div>
-      <div class="benefit-desc">The system learns which messages get the best response rates, which call scripts convert best, and which lead sources produce the highest-value customers.</div>
-    </div>
-  </div>
-</section>
+<div class="divider"></div>
 
-<!-- MARKET -->
-<section id="market">
-  <div class="market-inner">
-    <div class="reveal">
-      <div class="section-label">Target Market</div>
-      <h2>Who It's Built For</h2>
-      <ul class="target-list">
-        <li><span>▸</span> Digital agencies selling websites, SEO, social media marketing, or app development</li>
-        <li><span>▸</span> SaaS companies with self-serve or low-touch sales models</li>
-        <li><span>▸</span> Real estate agencies doing outbound to property owners or buyers</li>
-        <li><span>▸</span> Insurance and financial services firms reaching out to SMBs</li>
-        <li><span>▸</span> Education and training providers marketing to businesses</li>
-        <li><span>▸</span> Any B2B service provider that relies on outbound sales to grow</li>
-      </ul>
+<!-- PRICING -->
+<section id="pricing">
+  <div class="price-inner">
+    <div class="price-hd reveal">
+      <div class="s-label">Pricing</div>
+      <h2 class="s-title">Simple, Scalable<br><span class="tt">Pricing</span></h2>
+      <p class="s-sub" style="margin:0 auto;">Start small, scale fast. No hidden fees. Cancel anytime.</p>
+      <div class="ptoggle">
+        <button class="ptbtn on" id="pMon" onclick="setPlan('monthly')">Monthly</button>
+        <button class="ptbtn" id="pAnn" onclick="setPlan('annual')">Annual <span style="color:var(--teal);font-size:.7rem;"> −20%</span></button>
+      </div>
     </div>
-    <div class="reveal reveal-delay-2">
-      <div class="section-label">Revenue Model</div>
-      <h2>How We Monetize</h2>
-      <div class="revenue-cards">
-        <div class="rev-card">
-          <div class="rev-icon">📦</div>
-          <div>
-            <div class="rev-title">Subscription Tiers</div>
-            <div class="rev-desc">Based on leads/month and channels enabled</div>
-          </div>
-        </div>
-        <div class="rev-card">
-          <div class="rev-icon">💬</div>
-          <div>
-            <div class="rev-title">Per-Conversation Credits</div>
-            <div class="rev-desc">For WhatsApp messages and voice calls</div>
-          </div>
-        </div>
-        <div class="rev-card">
-          <div class="rev-icon">🏢</div>
-          <div>
-            <div class="rev-title">Enterprise Plans</div>
-            <div class="rev-desc">Custom integrations, dedicated support, white-labeling</div>
-          </div>
-        </div>
-        <div class="rev-card">
-          <div class="rev-icon">🤝</div>
-          <div>
-            <div class="rev-title">Agency Reseller Program</div>
-            <div class="rev-desc">Offer as a managed service to agency clients</div>
-          </div>
-        </div>
+    <div class="pcards">
+      <div class="pc reveal d1">
+        <div class="pc-tier">Starter</div>
+        <div class="pc-name">Launch</div>
+        <div class="pc-val" id="pv1"><sup>$</sup>299<span>/mo</span></div>
+        <div class="pc-desc">Perfect for solo operators and small agencies getting started with AI-powered outreach.</div>
+        <div class="pc-div"></div>
+        <ul class="pc-list">
+          <li>Up to 500 leads/month</li>
+          <li>Prospector + Outreacher agents</li>
+          <li>WhatsApp, Email & Telegram</li>
+          <li>Basic CRM dashboard</li>
+          <li>Email support</li>
+          <li class="off">AI Voice Calling</li>
+          <li class="off">Auto-invoicing</li>
+          <li class="off">Project dispatcher</li>
+        </ul>
+        <button class="pc-btn" onclick="goto('#contact')">Get Started</button>
+      </div>
+      <div class="pc hot reveal d2">
+        <div class="pc-badge">Most Popular</div>
+        <div class="pc-tier">Growth</div>
+        <div class="pc-name">Scale</div>
+        <div class="pc-val" id="pv2"><sup>$</sup>699<span>/mo</span></div>
+        <div class="pc-desc">The full 7-agent pipeline for teams serious about automating their entire sales funnel.</div>
+        <div class="pc-div"></div>
+        <ul class="pc-list">
+          <li>Up to 2,500 leads/month</li>
+          <li>All 7 AI agents active</li>
+          <li>WhatsApp, Email & Telegram</li>
+          <li>AI Voice Calling</li>
+          <li>Auto proposals & invoicing</li>
+          <li>Project dispatcher (Jira/ClickUp)</li>
+          <li>Human Supervisor alerts</li>
+          <li>Priority support</li>
+        </ul>
+        <button class="pc-btn solid" onclick="goto('#contact')">Start Free Trial</button>
+      </div>
+      <div class="pc reveal d3">
+        <div class="pc-tier">Enterprise</div>
+        <div class="pc-name">Command</div>
+        <div class="pc-val"><sup></sup>Custom</div>
+        <div class="pc-desc">For agencies, resellers, and enterprises needing custom limits, integrations, and white-labeling.</div>
+        <div class="pc-div"></div>
+        <ul class="pc-list">
+          <li>Unlimited leads</li>
+          <li>All 7 agents + custom agents</li>
+          <li>White-label & custom domain</li>
+          <li>Agency reseller program</li>
+          <li>Dedicated account manager</li>
+          <li>Custom API integrations</li>
+          <li>SLA & uptime guarantee</li>
+          <li>Onboarding & training</li>
+        </ul>
+        <button class="pc-btn" onclick="goto('#contact')">Talk to Sales</button>
       </div>
     </div>
   </div>
 </section>
 
-<!-- STACK -->
-<section id="stack">
-  <div class="stack-header reveal">
-    <div class="section-label">Technical Foundation</div>
-    <h2>The Tech Stack</h2>
-  </div>
-  <div class="stack-grid reveal reveal-delay-1">
-    <div class="stack-cell">
-      <div class="stack-layer">Scraping Layer</div>
-      <div class="stack-item">Apify / Puppeteer</div>
-      <div class="stack-item">Google Maps API</div>
-      <div class="stack-item">LinkedIn API</div>
-      <div class="stack-item">Custom crawlers</div>
+<div class="divider"></div>
+
+<!-- TESTIMONIALS -->
+<section id="testimonials">
+  <div class="testi-inner">
+    <div class="testi-hd reveal">
+      <div class="s-label">Customers</div>
+      <h2 class="s-title">What Our Clients<br><span class="ta">Are Saying</span></h2>
     </div>
-    <div class="stack-cell">
-      <div class="stack-layer">Messaging Layer</div>
-      <div class="stack-item">WhatsApp Business API</div>
-      <div class="stack-item">360Dialog</div>
-      <div class="stack-item">Twilio</div>
-      <div class="stack-item">Fine-tuned LLMs</div>
-    </div>
-    <div class="stack-cell">
-      <div class="stack-layer">Voice & AI Layer</div>
-      <div class="stack-item">Vapi / Retell AI</div>
-      <div class="stack-item">Deepgram</div>
-      <div class="stack-item">ElevenLabs</div>
-      <div class="stack-item">GPT-4 / Claude</div>
-    </div>
-    <div class="stack-cell">
-      <div class="stack-layer">Orchestration</div>
-      <div class="stack-item">LangGraph / CrewAI</div>
-      <div class="stack-item">PostgreSQL + Redis</div>
-      <div class="stack-item">Stripe / Razorpay</div>
-      <div class="stack-item">Jira / ClickUp APIs</div>
+    <div class="tgrid">
+      <div class="tc reveal d1">
+        <div class="tc-stars">★★★★★</div>
+        <div class="tc-q">We went from manually reaching out to 40 prospects a week to over 3,000. Our pipeline is fuller than it's ever been and our sales team only steps in when the deal is basically done. Complete game-changer.</div>
+        <div class="tc-auth"><div class="tc-av">MK</div><div><div class="tc-name">Marcus K.</div><div class="tc-role">CEO, SkyDigital Agency — Dubai</div></div></div>
+      </div>
+      <div class="tc reveal d2">
+        <div class="tc-stars">★★★★★</div>
+        <div class="tc-q">The AI caller blew my mind. It conducts a better discovery call than half my junior reps. The transcripts are detailed, the qualification is solid, and deals are handed off clean. We closed $180k in two months.</div>
+        <div class="tc-auth"><div class="tc-av">SR</div><div><div class="tc-name">Sofia R.</div><div class="tc-role">Head of Sales, LaunchPad SaaS</div></div></div>
+      </div>
+      <div class="tc reveal d3">
+        <div class="tc-stars">★★★★★</div>
+        <div class="tc-q">We resell Prospera AI as a managed service to our real estate clients. The agency plan paid for itself in the first week. Our clients love it and we've added a new revenue stream with almost zero overhead.</div>
+        <div class="tc-auth"><div class="tc-av">AJ</div><div><div class="tc-name">Amir J.</div><div class="tc-role">Founder, NexaGroup — London</div></div></div>
+      </div>
     </div>
   </div>
 </section>
 
-<!-- CTA -->
-<section id="cta">
-  <div class="hero-glow" style="top:10%;opacity:0.6;"></div>
-  <h2 class="reveal">Ready to <span style="color:var(--accent)">Automate</span><br>Your Pipeline?</h2>
-  <p class="reveal reveal-delay-1">Reach 10× more prospects. Respond 100× faster. Convert at 3–5× the rate. Let your humans do what they do best — build relationships and deliver great work.</p>
-  <div class="cta-buttons reveal reveal-delay-2">
-    <button class="btn-primary">Request a Demo</button>
-    <button class="btn-outline">View Full Deck</button>
+<div class="divider"></div>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="about-inner">
+    <div class="orbit reveal">
+      <div class="ring"></div>
+      <div class="ring2"></div>
+      <div class="ring3"></div>
+      <div class="odot od1"></div>
+      <div class="odot od2"></div>
+      <div class="odot od3"></div>
+      <div class="odot od4"></div>
+      <div class="orbit-c">
+        <div class="oc-logo">Prospera AI</div>
+        <div class="oc-yr">Est. 2024</div>
+      </div>
+    </div>
+    <div class="about-txt reveal d2">
+      <div class="s-label">About Us</div>
+      <h2 class="s-title">Built by Sales Veterans<br>&amp; <span class="tt">AI Engineers</span></h2>
+      <p>Prospera AI was founded by a team who spent years managing outbound sales teams — watching talented reps waste half their day on prospecting, follow-ups, and admin work that should have been automated long ago.</p>
+      <p>We built the platform we always wished existed: one that handles the entire pipeline from cold data to closed deal, with agents that share context and learn over time. Not five tools duct-taped together — one intelligent system.</p>
+      <p>Today, Prospera AI helps businesses of every size — from solo operators to enterprise sales teams — compete with the speed and scale that the market demands.</p>
+      <div class="pillars">
+        <div class="pillar"><div class="pl-icon">🎯</div><div class="pl-title">Our Mission</div><div class="pl-desc">Give every business the sales firepower of an enterprise team.</div></div>
+        <div class="pillar"><div class="pl-icon">💡</div><div class="pl-title">Our Approach</div><div class="pl-desc">End-to-end automation with human-level conversation quality.</div></div>
+        <div class="pillar"><div class="pl-icon">🌱</div><div class="pl-title">Our Values</div><div class="pl-desc">Transparency, speed, and relentless iteration on what works.</div></div>
+        <div class="pillar"><div class="pl-icon">🤝</div><div class="pl-title">Our Promise</div><div class="pl-desc">We don't win unless your pipeline wins. Simple as that.</div></div>
+      </div>
+    </div>
   </div>
 </section>
 
+<div class="divider"></div>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="contact-inner">
+    <div class="ci reveal">
+      <div class="s-label">Contact</div>
+      <h2 class="s-title">Let's Build Your<br><span class="ta">Pipeline</span></h2>
+      <p>Ready to see what Prospera AI can do for your business? Drop us a message and our team will reach back within 24 hours — or better yet, let our own AI demo itself to you.</p>
+      <div class="cdetails">
+        <div class="citem"><div class="cicon">✉</div><div><div class="ci-lbl">Email</div><div class="ci-val">info@leadflow.ai</div></div></div>
+        <div class="citem"><div class="cicon">💬</div><div><div class="ci-lbl">WhatsApp</div><div class="ci-val">Available via the platform</div></div></div>
+        <div class="citem"><div class="cicon">🌐</div><div><div class="ci-lbl">Website</div><div class="ci-val">www.prospera.ai</div></div></div>
+        <div class="citem"><div class="cicon">📍</div><div><div class="ci-lbl">Headquarters</div><div class="ci-val">Dubai, UAE — Serving clients globally</div></div></div>
+      </div>
+    </div>
+    <div class="cform reveal d2">
+      <div class="frow">
+        <div class="fg"><label>First Name</label><input type="text" placeholder="John"></div>
+        <div class="fg"><label>Last Name</label><input type="text" placeholder="Smith"></div>
+      </div>
+      <div class="fg"><label>Business Email</label><input type="email" placeholder="john@company.com"></div>
+      <div class="fg"><label>Company</label><input type="text" placeholder="Your company name"></div>
+      <div class="fg">
+        <label>I'm interested in</label>
+        <select>
+          <option>Starting a free trial</option>
+          <option>Booking a demo</option>
+          <option>Agency / Reseller partnership</option>
+          <option>Enterprise plan</option>
+          <option>General enquiry</option>
+        </select>
+      </div>
+      <div class="fg"><label>Message</label><textarea placeholder="Tell us about your business and what you're looking to automate…"></textarea></div>
+      <button class="fsub" id="fsub">Send Message →</button>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
 <footer>
-  © 2025 LeadFlow AI — The Autonomous Sales Pipeline &nbsp;·&nbsp; Confidential Client Presentation
+  <div class="foot-g">
+    <div>
+      <div class="fb-name"><em>Prospera</em> AI</div>
+      <div class="fb-tag">The autonomous sales pipeline — from cold data to closed deals, powered by a coordinated team of AI agents.</div>
+      <div class="socials">
+        <a href="#" class="soc">in</a>
+        <a href="#" class="soc">𝕏</a>
+        <a href="#" class="soc">▶</a>
+        <a href="#" class="soc">ig</a>
+      </div>
+    </div>
+    <div>
+      <div class="fc-head">Product</div>
+      <ul class="flinks"><li><a href="#how">How It Works</a></li><li><a href="#features">Features</a></li><li><a href="#pricing">Pricing</a></li><li><a href="#">Integrations</a></li><li><a href="#">Changelog</a></li></ul>
+    </div>
+    <div>
+      <div class="fc-head">Company</div>
+      <ul class="flinks"><li><a href="#about">About Us</a></li><li><a href="#">Blog</a></li><li><a href="#">Careers</a></li><li><a href="#">Press</a></li><li><a href="#contact">Contact</a></li></ul>
+    </div>
+    <div>
+      <div class="fc-head">Legal</div>
+      <ul class="flinks"><li><a href="#">Privacy Policy</a></li><li><a href="#">Terms of Service</a></li><li><a href="#">Cookie Policy</a></li><li><a href="#">GDPR</a></li></ul>
+    </div>
+  </div>
+  <div class="foot-bot">
+    <div>© 2025 Prospera AI. All rights reserved.</div>
+    <div>Built for the speed of modern sales · <a href="mailto:info@leadflow.ai">info@leadflow.ai</a></div>
+  </div>
 </footer>
 
 <script>
-  // Scroll reveal
-  const reveals = document.querySelectorAll('.reveal');
-  const obs = new IntersectionObserver((entries) => {
-    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
-  }, { threshold: 0.1 });
-  reveals.forEach(el => obs.observe(el));
-
-  // Nav scrollspy
-  const sections = document.querySelectorAll('section[id]');
-  const navLinks = document.querySelectorAll('.nav-links a');
-  const navObs = new IntersectionObserver((entries) => {
-    entries.forEach(e => {
-      if (e.isIntersecting) {
-        navLinks.forEach(a => a.classList.remove('active'));
-        const link = document.querySelector(`.nav-links a[href="#${e.target.id}"]`);
-        if (link) link.classList.add('active');
-      }
-    });
-  }, { threshold: 0.4 });
-  sections.forEach(s => navObs.observe(s));
-
-  // Nav smooth scroll
-  navLinks.forEach(a => {
-    a.addEventListener('click', e => {
-      e.preventDefault();
-      document.querySelector(a.getAttribute('href')).scrollIntoView({ behavior: 'smooth' });
-    });
-  });
+// Cursor
+const cur=document.getElementById('cur'),curR=document.getElementById('curR');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cur.style.left=mx+'px';cur.style.top=my+'px';});
+(function loop(){rx+=(mx-rx)*.12;ry+=(my-ry)*.12;curR.style.left=rx+'px';curR.style.top=ry+'px';requestAnimationFrame(loop);})();
+document.querySelectorAll('a,button,.fc,.tc,.pc,.step,.pillar').forEach(el=>{
+  el.addEventListener('mouseenter',()=>{cur.style.width='18px';cur.style.height='18px';curR.style.width='52px';curR.style.height='52px';});
+  el.addEventListener('mouseleave',()=>{cur.style.width='10px';cur.style.height='10px';curR.style.width='36px';curR.style.height='36px';});
+});
+// Reveal
+const obs=new IntersectionObserver(e=>e.forEach(x=>{if(x.isIntersecting)x.target.classList.add('on');}),{threshold:.1});
+document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+// Nav
+window.addEventListener('scroll',()=>document.getElementById('nav').classList.toggle('scrolled',scrollY>60));
+// Mobile
+document.getElementById('hamBtn').addEventListener('click',()=>document.getElementById('mobMenu').classList.add('open'));
+document.getElementById('mobClose').addEventListener('click',closeMob);
+function closeMob(){document.getElementById('mobMenu').classList.remove('open');}
+// Scroll
+function goto(id){document.querySelector(id).scrollIntoView({behavior:'smooth'});}
+document.querySelectorAll('a[href^="#"]').forEach(a=>a.addEventListener('click',e=>{const t=document.querySelector(a.getAttribute('href'));if(t){e.preventDefault();t.scrollIntoView({behavior:'smooth'});}}));
+// Pricing
+const plans={monthly:['299','699'],annual:['239','559']};
+function setPlan(t){
+  document.getElementById('pMon').classList.toggle('on',t==='monthly');
+  document.getElementById('pAnn').classList.toggle('on',t==='annual');
+  const s=t==='monthly'?'/mo':'/mo*';
+  document.getElementById('pv1').innerHTML='<sup>$</sup>'+plans[t][0]+'<span>'+s+'</span>';
+  document.getElementById('pv2').innerHTML='<sup>$</sup>'+plans[t][1]+'<span>'+s+'</span>';
+}
+// Form
+document.getElementById('fsub').addEventListener('click',function(){
+  this.textContent='✓ Message Sent!';this.style.background='var(--teal)';
+  setTimeout(()=>{this.textContent='Send Message →';this.style.background='';},3000);
+});
 </script>
 </body>
 </html>
