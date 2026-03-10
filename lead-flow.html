@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LeadFlow AI — The Autonomous Sales Pipeline</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Mono:wght@300;400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #04040a;
+    --surface: #0c0c18;
+    --card: #10101f;
+    --border: rgba(100,100,200,0.15);
+    --accent: #4f6cff;
+    --accent2: #00e5c4;
+    --accent3: #ff4f8b;
+    --text: #e8e8f0;
+    --muted: #6b6b90;
+    --glow: rgba(79,108,255,0.3);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    overflow-x: hidden;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 1.2rem 3rem;
+    background: rgba(4,4,10,0.85);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-logo { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.1rem; letter-spacing: -0.02em; }
+  .nav-logo span { color: var(--accent); }
+  .nav-links { display: flex; gap: 2rem; }
+  .nav-links a {
+    color: var(--muted); text-decoration: none; font-size: 0.75rem;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--text); }
+
+  /* SECTIONS */
+  section {
+    min-height: 100vh;
+    display: flex; align-items: center; justify-content: center;
+    padding: 7rem 4rem 5rem;
+    position: relative;
+  }
+
+  /* HERO */
+  #hero {
+    flex-direction: column;
+    text-align: center;
+    overflow: hidden;
+  }
+  .hero-eyebrow {
+    font-size: 0.7rem; letter-spacing: 0.25em; text-transform: uppercase;
+    color: var(--accent); margin-bottom: 2rem;
+    display: flex; align-items: center; justify-content: center; gap: 0.75rem;
+  }
+  .hero-eyebrow::before, .hero-eyebrow::after {
+    content: ''; width: 40px; height: 1px; background: var(--accent); opacity: 0.5;
+  }
+  h1 {
+    font-family: 'Syne', sans-serif; font-weight: 800;
+    font-size: clamp(3.5rem, 8vw, 7rem);
+    line-height: 0.95; letter-spacing: -0.03em;
+    margin-bottom: 1.5rem;
+  }
+  h1 .line1 { display: block; color: var(--text); }
+  h1 .line2 { display: block; color: transparent;
+    -webkit-text-stroke: 1px rgba(255,255,255,0.25); }
+  h1 .accent-word { color: var(--accent); }
+  .hero-sub {
+    font-family: 'Instrument Serif', serif; font-style: italic;
+    font-size: 1.3rem; color: var(--muted); max-width: 540px; line-height: 1.6;
+    margin: 0 auto 3rem;
+  }
+  .hero-cta {
+    display: inline-flex; align-items: center; gap: 0.75rem;
+    background: var(--accent); color: #fff;
+    font-family: 'DM Mono', monospace; font-size: 0.75rem; letter-spacing: 0.1em; text-transform: uppercase;
+    padding: 1rem 2.5rem; border: none; cursor: pointer;
+    clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px));
+    transition: background 0.2s, transform 0.2s;
+  }
+  .hero-cta:hover { background: #6680ff; transform: translateY(-2px); }
+
+  /* Grid BG */
+  .grid-bg {
+    position: absolute; inset: 0; z-index: 0;
+    background-image:
+      linear-gradient(rgba(79,108,255,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(79,108,255,0.04) 1px, transparent 1px);
+    background-size: 60px 60px;
+    mask-image: radial-gradient(ellipse at center, black 30%, transparent 80%);
+  }
+  .hero-glow {
+    position: absolute; top: 20%; left: 50%; transform: translateX(-50%);
+    width: 600px; height: 400px;
+    background: radial-gradient(ellipse, rgba(79,108,255,0.12) 0%, transparent 70%);
+    pointer-events: none; z-index: 0;
+  }
+  section > * { position: relative; z-index: 1; }
+
+  /* VISION */
+  #vision { background: var(--surface); }
+  .vision-inner {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 6rem;
+    max-width: 1100px; width: 100%; align-items: center;
+  }
+  .section-label {
+    font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--accent2); margin-bottom: 1rem;
+  }
+  h2 {
+    font-family: 'Syne', sans-serif; font-weight: 800;
+    font-size: clamp(2rem, 4vw, 3.5rem);
+    line-height: 1.05; letter-spacing: -0.02em;
+    margin-bottom: 1.5rem;
+  }
+  .vision-text p {
+    color: var(--muted); line-height: 1.8; font-size: 0.85rem;
+    margin-bottom: 1rem;
+  }
+  .stat-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;
+  }
+  .stat-card {
+    background: var(--card); border: 1px solid var(--border);
+    padding: 1.5rem; position: relative; overflow: hidden;
+    clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 0 100%);
+  }
+  .stat-card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, var(--accent), transparent);
+  }
+  .stat-num {
+    font-family: 'Syne', sans-serif; font-size: 2.5rem; font-weight: 800;
+    color: var(--accent); line-height: 1;
+  }
+  .stat-num.green { color: var(--accent2); }
+  .stat-num.pink { color: var(--accent3); }
+  .stat-label { font-size: 0.7rem; color: var(--muted); margin-top: 0.5rem; letter-spacing: 0.05em; }
+
+  /* AGENTS */
+  #agents { flex-direction: column; background: var(--bg); }
+  .agents-header { text-align: center; margin-bottom: 4rem; max-width: 600px; }
+  .agents-header p { color: var(--muted); font-size: 0.85rem; line-height: 1.7; margin-top: 1rem; }
+
+  .agents-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5px;
+    max-width: 1100px; width: 100%;
+    background: var(--border);
+    border: 1px solid var(--border);
+  }
+  .agent-card {
+    background: var(--bg);
+    padding: 2.5rem 2rem; cursor: pointer;
+    transition: background 0.3s;
+    position: relative; overflow: hidden;
+  }
+  .agent-card::after {
+    content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 0;
+    background: var(--accent); opacity: 0.06;
+    transition: height 0.3s;
+  }
+  .agent-card:hover { background: var(--surface); }
+  .agent-card:hover::after { height: 100%; }
+  .agent-number {
+    font-size: 0.65rem; letter-spacing: 0.2em; color: var(--muted);
+    margin-bottom: 1rem; font-family: 'DM Mono', monospace;
+  }
+  .agent-icon { font-size: 2rem; margin-bottom: 1rem; display: block; }
+  .agent-name {
+    font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1.2rem;
+    margin-bottom: 0.5rem; color: var(--text);
+  }
+  .agent-role {
+    font-size: 0.7rem; color: var(--accent); letter-spacing: 0.1em;
+    text-transform: uppercase; margin-bottom: 1rem;
+  }
+  .agent-desc { font-size: 0.8rem; color: var(--muted); line-height: 1.7; }
+  .agent-example {
+    margin-top: 1.5rem; padding: 1rem;
+    background: rgba(79,108,255,0.06); border-left: 2px solid var(--accent);
+    font-size: 0.75rem; color: var(--muted); line-height: 1.6;
+    font-style: italic;
+    max-height: 0; overflow: hidden;
+    transition: max-height 0.4s ease, opacity 0.3s;
+    opacity: 0;
+  }
+  .agent-card:hover .agent-example { max-height: 200px; opacity: 1; }
+  .agent-example strong { color: var(--accent2); font-style: normal; }
+
+  /* FLOW DIAGRAM */
+  #flow { flex-direction: column; background: var(--surface); }
+  .flow-title { text-align: center; margin-bottom: 4rem; }
+  .flow-diagram {
+    max-width: 900px; width: 100%;
+    display: flex; flex-direction: column; gap: 0;
+  }
+  .flow-row { display: flex; align-items: center; justify-content: center; gap: 0; }
+  .flow-node {
+    background: var(--card); border: 1px solid var(--border);
+    padding: 1.5rem 2rem; flex: 1; max-width: 260px;
+    position: relative;
+    clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px));
+    transition: border-color 0.3s, transform 0.3s;
+    cursor: default;
+  }
+  .flow-node:hover { border-color: var(--accent); transform: scale(1.03); }
+  .flow-node-num { font-size: 0.6rem; color: var(--muted); letter-spacing: 0.15em; margin-bottom: 0.5rem; }
+  .flow-node-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.95rem; }
+  .flow-node-sub { font-size: 0.7rem; color: var(--muted); margin-top: 0.25rem; }
+  .flow-node.active-node { border-color: var(--accent2); }
+  .flow-node.active-node .flow-node-title { color: var(--accent2); }
+
+  .flow-arrow {
+    width: 60px; display: flex; align-items: center; justify-content: center;
+    color: var(--accent); font-size: 1.2rem; flex-shrink: 0;
+  }
+  .flow-down {
+    display: flex; justify-content: center; align-items: center;
+    color: var(--accent); font-size: 1.5rem; padding: 0.75rem 0;
+  }
+  .flow-row.reverse { flex-direction: row-reverse; }
+  .flow-row.reverse .flow-arrow { transform: scaleX(-1); }
+
+  /* BENEFITS */
+  #benefits { flex-direction: column; background: var(--bg); }
+  .benefits-header { text-align: center; margin-bottom: 4rem; max-width: 600px; }
+  .benefits-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem;
+    max-width: 1100px; width: 100%;
+  }
+  .benefit-card {
+    background: var(--card); border: 1px solid var(--border);
+    padding: 2rem 1.5rem;
+    clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 0 100%);
+    transition: border-color 0.3s, transform 0.3s;
+  }
+  .benefit-card:hover { border-color: var(--accent2); transform: translateY(-4px); }
+  .benefit-icon { font-size: 1.8rem; margin-bottom: 1rem; }
+  .benefit-title {
+    font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1rem;
+    margin-bottom: 0.75rem;
+  }
+  .benefit-desc { font-size: 0.78rem; color: var(--muted); line-height: 1.7; }
+
+  /* MARKET */
+  #market { background: var(--surface); }
+  .market-inner {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 6rem;
+    max-width: 1100px; width: 100%; align-items: start;
+  }
+  .target-list { list-style: none; margin-top: 1.5rem; }
+  .target-list li {
+    display: flex; align-items: flex-start; gap: 1rem;
+    padding: 1rem 0; border-bottom: 1px solid var(--border);
+    font-size: 0.82rem; color: var(--muted); line-height: 1.5;
+  }
+  .target-list li span { color: var(--accent); font-size: 1rem; flex-shrink: 0; margin-top: 1px; }
+  .revenue-cards { display: flex; flex-direction: column; gap: 1rem; margin-top: 1.5rem; }
+  .rev-card {
+    background: var(--card); border: 1px solid var(--border);
+    padding: 1.25rem 1.5rem; display: flex; align-items: center; gap: 1.5rem;
+    clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 0 100%);
+  }
+  .rev-icon { font-size: 1.5rem; }
+  .rev-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.9rem; }
+  .rev-desc { font-size: 0.75rem; color: var(--muted); margin-top: 0.2rem; }
+
+  /* STACK */
+  #stack { flex-direction: column; background: var(--bg); }
+  .stack-header { text-align: center; margin-bottom: 4rem; }
+  .stack-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px;
+    max-width: 1100px; width: 100%;
+    background: var(--border);
+    border: 1px solid var(--border);
+  }
+  .stack-cell {
+    background: var(--bg); padding: 2rem 1.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .stack-layer {
+    font-size: 0.6rem; letter-spacing: 0.15em; text-transform: uppercase;
+    color: var(--accent3); margin-bottom: 0.75rem;
+  }
+  .stack-item {
+    display: flex; align-items: center; gap: 0.5rem;
+    font-size: 0.78rem; color: var(--muted); margin-bottom: 0.4rem;
+  }
+  .stack-item::before { content: '›'; color: var(--accent); }
+
+  /* CTA */
+  #cta {
+    background: var(--surface); flex-direction: column; text-align: center;
+    min-height: 50vh;
+  }
+  #cta h2 { font-size: clamp(2.5rem, 5vw, 4.5rem); margin-bottom: 1.5rem; }
+  #cta p { color: var(--muted); max-width: 500px; font-size: 0.85rem; line-height: 1.8; margin-bottom: 3rem; }
+  .cta-buttons { display: flex; gap: 1.5rem; justify-content: center; }
+  .btn-primary {
+    background: var(--accent); color: #fff; border: none; cursor: pointer;
+    font-family: 'DM Mono', monospace; font-size: 0.75rem; letter-spacing: 0.1em; text-transform: uppercase;
+    padding: 1rem 2.5rem;
+    clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px));
+    transition: background 0.2s, transform 0.2s;
+  }
+  .btn-primary:hover { background: #6680ff; transform: translateY(-2px); }
+  .btn-outline {
+    background: transparent; color: var(--text);
+    border: 1px solid var(--border); cursor: pointer;
+    font-family: 'DM Mono', monospace; font-size: 0.75rem; letter-spacing: 0.1em; text-transform: uppercase;
+    padding: 1rem 2.5rem;
+    transition: border-color 0.2s, color 0.2s;
+  }
+  .btn-outline:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* FOOTER */
+  footer {
+    text-align: center; padding: 2rem;
+    border-top: 1px solid var(--border);
+    font-size: 0.7rem; color: var(--muted); letter-spacing: 0.05em;
+  }
+
+  /* SCROLL ANIMATIONS */
+  .reveal {
+    opacity: 0; transform: translateY(30px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  .reveal.visible { opacity: 1; transform: none; }
+  .reveal-delay-1 { transition-delay: 0.1s; }
+  .reveal-delay-2 { transition-delay: 0.2s; }
+  .reveal-delay-3 { transition-delay: 0.3s; }
+  .reveal-delay-4 { transition-delay: 0.4s; }
+
+  /* TAG */
+  .tag {
+    display: inline-block;
+    border: 1px solid var(--accent); color: var(--accent);
+    font-size: 0.65rem; letter-spacing: 0.15em; text-transform: uppercase;
+    padding: 0.3rem 0.75rem; margin-bottom: 1rem;
+  }
+
+  /* Scrollspy active */
+  .nav-links a.active { color: var(--accent); }
+
+  @media (max-width: 900px) {
+    nav { padding: 1rem 1.5rem; }
+    .nav-links { display: none; }
+    section { padding: 6rem 1.5rem 4rem; }
+    .vision-inner, .market-inner { grid-template-columns: 1fr; gap: 3rem; }
+    .agents-grid { grid-template-columns: 1fr 1fr; }
+    .benefits-grid { grid-template-columns: 1fr 1fr; }
+    .stack-grid { grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 600px) {
+    .agents-grid, .benefits-grid, .stack-grid { grid-template-columns: 1fr; }
+    .stat-grid { grid-template-columns: 1fr 1fr; }
+    h1 { font-size: 3rem; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">Lead<span>Flow</span> AI</div>
+  <div class="nav-links">
+    <a href="#vision">Vision</a>
+    <a href="#agents">Agents</a>
+    <a href="#flow">Flow</a>
+    <a href="#benefits">Benefits</a>
+    <a href="#market">Market</a>
+    <a href="#stack">Stack</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="grid-bg"></div>
+  <div class="hero-glow"></div>
+  <div class="hero-eyebrow">Autonomous Sales Intelligence</div>
+  <h1>
+    <span class="line1">Lead<span class="accent-word">Flow</span></span>
+    <span class="line2">AI</span>
+  </h1>
+  <p class="hero-sub">From Cold Data to Closed Deals — powered by a coordinated team of specialized AI agents working 24/7.</p>
+  <button class="hero-cta" onclick="document.getElementById('vision').scrollIntoView({behavior:'smooth'})">
+    Explore the Platform →
+  </button>
+</section>
+
+<!-- VISION -->
+<section id="vision">
+  <div class="vision-inner">
+    <div class="vision-text reveal">
+      <div class="section-label">The Vision</div>
+      <h2>Your Entire Sales Team.<br>Automated.</h2>
+      <p>LeadFlow AI is a full-cycle, autonomous sales automation platform that deploys a coordinated team of specialized AI agents to handle every stage of the sales pipeline — from discovering prospects to closing deals and kicking off delivery.</p>
+      <p>Instead of hiring a large sales team to cold-call thousands of leads, intelligent agents work around the clock — finding businesses, reaching out on WhatsApp, having real conversations, booking calls, conducting discovery calls by voice, sending invoices, and creating project tickets.</p>
+    </div>
+    <div class="stat-grid reveal reveal-delay-2">
+      <div class="stat-card">
+        <div class="stat-num">5,000+</div>
+        <div class="stat-label">prospects reached per day vs. 50–100 manually</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num green">60–80%</div>
+        <div class="stat-label">lower cost per qualified lead</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num pink">21×</div>
+        <div class="stat-label">more likely to qualify leads responded to in &lt;5 min</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">24/7</div>
+        <div class="stat-label">operations — across all time zones, non-stop</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- AGENTS -->
+<section id="agents">
+  <div class="agents-header reveal">
+    <div class="section-label">7-Agent Architecture</div>
+    <h2>Meet Your AI Sales Team</h2>
+    <p>Seven specialized agents, each with a distinct role, sharing context seamlessly — so every interaction builds on the last. A human supervisor steps in whenever the situation demands it.</p>
+  </div>
+  <div class="agents-grid reveal reveal-delay-1">
+    <div class="agent-card">
+      <div class="agent-number">AGENT_01</div>
+      <span class="agent-icon">🔍</span>
+      <div class="agent-name">The Prospector</div>
+      <div class="agent-role">Data Scraping & Lead Discovery</div>
+      <div class="agent-desc">Scours Google Maps, LinkedIn, Google Ads, Meta Ads, email inboxes, business directories, and industry databases to find businesses matching your Ideal Customer Profile — extracting names, phones, emails, websites, and location data into a structured CRM list.</div>
+      <div class="agent-example"><strong>Example:</strong> Pulls warm leads from your Google Ads audience, Meta lead forms, and cold prospects from Google Maps — all unified into a single deduplicated list overnight.</div>
+    </div>
+    <div class="agent-card">
+      <div class="agent-number">AGENT_02</div>
+      <span class="agent-icon">📡</span>
+      <div class="agent-name">The Outreacher</div>
+      <div class="agent-role">Multi-Channel First-Touch Outreach</div>
+      <div class="agent-desc">Initiates personalized outreach across WhatsApp, email, and Telegram — referencing each prospect's business name, industry, and a specific pain point. Sends in smart batches, respects timing windows, and manages follow-ups automatically across all channels.</div>
+      <div class="agent-example"><strong>Example:</strong> Sends a cold email, follows up on WhatsApp 24 hours later, and drops a Telegram message if no response — all with the same personalized context, zero manual effort.</div>
+    </div>
+    <div class="agent-card">
+      <div class="agent-number">AGENT_03</div>
+      <span class="agent-icon">🧠</span>
+      <div class="agent-name">The Engager</div>
+      <div class="agent-role">Multi-Channel Conversation & Booking</div>
+      <div class="agent-desc">When a prospect replies — on WhatsApp, email, or Telegram — this agent takes over. It understands context across channels, answers questions, handles objections, and guides the conversation toward booking a discovery call. Shares links, brochures, and calendar slots within the same thread.</div>
+      <div class="agent-example"><strong>Example:</strong> Prospect replies on Telegram asking about cost → agent responds with packages, shares a portfolio link, and suggests three available time slots — all without switching platforms.</div>
+    </div>
+    <div class="agent-card">
+      <div class="agent-number">AGENT_04</div>
+      <span class="agent-icon">📞</span>
+      <div class="agent-name">The Caller</div>
+      <div class="agent-role">AI Voice Discovery & Qualification</div>
+      <div class="agent-desc">Places an AI-powered voice call at the scheduled time, conducting a structured discovery conversation: understanding needs, budget, timeline, and goals — then recommending a package or escalating to the Human Supervisor for complex deals.</div>
+      <div class="agent-example"><strong>Example:</strong> Asks about online presence and goals, then recommends "Premium Website + Online Ordering" — or flags the deal for human review if the budget or scope is outside standard parameters.</div>
+    </div>
+    <div class="agent-card">
+      <div class="agent-number">AGENT_05</div>
+      <span class="agent-icon">👤</span>
+      <div class="agent-name">The Supervisor</div>
+      <div class="agent-role">Human-in-the-Loop Oversight</div>
+      <div class="agent-desc">When a deal requires human judgment — complex requirements, high-value accounts, sensitive objections, or edge cases — the Supervisor steps in. They receive a full brief: conversation history, call transcript, lead score, and recommended next action. Once resolved, the pipeline resumes automatically.</div>
+      <div class="agent-example"><strong>Example:</strong> A prospect requests a custom enterprise integration. The Supervisor is notified with a full brief, jumps in to negotiate, then hands back to the Closer once terms are agreed.</div>
+    </div>
+    <div class="agent-card">
+      <div class="agent-number">AGENT_06</div>
+      <span class="agent-icon">📋</span>
+      <div class="agent-name">The Closer</div>
+      <div class="agent-role">Proposal, Invoice & Confirmation</div>
+      <div class="agent-desc">Once the prospect says yes, immediately generates a professional email with a proposal summary, pricing breakdown, and payment invoice — integrated with Stripe or Razorpay. Handles follow-ups on unpaid invoices.</div>
+      <div class="agent-example"><strong>Example:</strong> Within 60 seconds of verbal confirmation, prospect receives a branded proposal PDF with a "Pay Now" button.</div>
+    </div>
+    <div class="agent-card">
+      <div class="agent-number">AGENT_07</div>
+      <span class="agent-icon">🚀</span>
+      <div class="agent-name">The Dispatcher</div>
+      <div class="agent-role">Internal Handoff & Project Kickoff</div>
+      <div class="agent-desc">Upon payment confirmation, automatically creates a project ticket in Jira, Trello, Asana, or ClickUp — with all client details, discovery call transcript requirements, selected package, and timeline. Delivery team is notified instantly.</div>
+      <div class="agent-example"><strong>Example:</strong> Jira ticket created: "New Project — Bella's Italian Kitchen — Premium Website — Due: 3 weeks — Requirements: [auto-populated]"</div>
+    </div>
+  </div>
+</section>
+
+<!-- FLOW -->
+<section id="flow">
+  <div class="flow-title reveal">
+    <div class="section-label">Complete Pipeline</div>
+    <h2>The Deal Flow at a Glance</h2>
+  </div>
+  <div class="flow-diagram reveal reveal-delay-1">
+    <div class="flow-row">
+      <div class="flow-node">
+        <div class="flow-node-num">01</div>
+        <div class="flow-node-title">🔍 Prospector</div>
+        <div class="flow-node-sub">Scrapes & builds lead list</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node">
+        <div class="flow-node-num">02</div>
+        <div class="flow-node-title">📡 Outreacher</div>
+        <div class="flow-node-sub">Email, WhatsApp, Telegram</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node active-node">
+        <div class="flow-node-num">03</div>
+        <div class="flow-node-title">🧠 Engager</div>
+        <div class="flow-node-sub">Converses & books calls</div>
+      </div>
+    </div>
+    <div class="flow-down">↓</div>
+    <div class="flow-row">
+      <div class="flow-node active-node">
+        <div class="flow-node-num">04</div>
+        <div class="flow-node-title">📞 Caller</div>
+        <div class="flow-node-sub">Voice discovery & qualification</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node" style="border-color:var(--accent3);">
+        <div class="flow-node-num">05</div>
+        <div class="flow-node-title" style="color:var(--accent3);">👤 Supervisor</div>
+        <div class="flow-node-sub">Human-in-the-loop (when needed)</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node">
+        <div class="flow-node-num">06</div>
+        <div class="flow-node-title">📋 Closer</div>
+        <div class="flow-node-sub">Sends invoice & proposal</div>
+      </div>
+    </div>
+    <div class="flow-down">↓</div>
+    <div class="flow-row" style="justify-content:flex-start; padding-left: calc(50% - 130px);">
+      <div class="flow-node active-node" style="max-width:260px;">
+        <div class="flow-node-num">07</div>
+        <div class="flow-node-title">🚀 Dispatcher</div>
+        <div class="flow-node-sub">Creates project ticket</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- BENEFITS -->
+<section id="benefits">
+  <div class="benefits-header reveal">
+    <div class="section-label">Key Benefits</div>
+    <h2>Why LeadFlow AI Wins</h2>
+  </div>
+  <div class="benefits-grid">
+    <div class="benefit-card reveal reveal-delay-1">
+      <div class="benefit-icon">⚡</div>
+      <div class="benefit-title">Massive Scale, Tiny Team</div>
+      <div class="benefit-desc">A single person can run outreach to thousands of prospects daily. LeadFlow AI reaches 5,000+ while maintaining personalized conversations.</div>
+    </div>
+    <div class="benefit-card reveal reveal-delay-2">
+      <div class="benefit-icon">🌐</div>
+      <div class="benefit-title">24/7 Operations</div>
+      <div class="benefit-desc">AI agents don't sleep, take lunch breaks, or call in sick. Your sales pipeline runs around the clock, across all time zones.</div>
+    </div>
+    <div class="benefit-card reveal reveal-delay-3">
+      <div class="benefit-icon">💸</div>
+      <div class="benefit-title">Lower Cost Per Lead</div>
+      <div class="benefit-desc">By eliminating large SDR teams, the cost of acquiring each qualified lead drops by 60–80%.</div>
+    </div>
+    <div class="benefit-card reveal reveal-delay-4">
+      <div class="benefit-icon">⏱</div>
+      <div class="benefit-title">Faster Speed-to-Lead</div>
+      <div class="benefit-desc">AI agents respond in seconds — making you 21× more likely to qualify leads compared to 5-minute response windows.</div>
+    </div>
+    <div class="benefit-card reveal reveal-delay-1">
+      <div class="benefit-icon">✅</div>
+      <div class="benefit-title">Consistent Quality</div>
+      <div class="benefit-desc">Every prospect gets the same professional, well-crafted experience. No bad days, no forgotten follow-ups, no inconsistent messaging.</div>
+    </div>
+    <div class="benefit-card reveal reveal-delay-2">
+      <div class="benefit-icon">📊</div>
+      <div class="benefit-title">Full Pipeline Visibility</div>
+      <div class="benefit-desc">Every interaction is logged, transcribed, and analyzed. You see exactly where each lead is and why deals are won or lost.</div>
+    </div>
+    <div class="benefit-card reveal reveal-delay-3">
+      <div class="benefit-icon">🤝</div>
+      <div class="benefit-title">Seamless Human Handoff</div>
+      <div class="benefit-desc">AI handles the volume; your team handles the relationships. Humans step in only when the deal is warm and qualified.</div>
+    </div>
+    <div class="benefit-card reveal reveal-delay-4">
+      <div class="benefit-icon">📈</div>
+      <div class="benefit-title">Data-Driven Optimization</div>
+      <div class="benefit-desc">The system learns which messages get the best response rates, which call scripts convert best, and which lead sources produce the highest-value customers.</div>
+    </div>
+  </div>
+</section>
+
+<!-- MARKET -->
+<section id="market">
+  <div class="market-inner">
+    <div class="reveal">
+      <div class="section-label">Target Market</div>
+      <h2>Who It's Built For</h2>
+      <ul class="target-list">
+        <li><span>▸</span> Digital agencies selling websites, SEO, social media marketing, or app development</li>
+        <li><span>▸</span> SaaS companies with self-serve or low-touch sales models</li>
+        <li><span>▸</span> Real estate agencies doing outbound to property owners or buyers</li>
+        <li><span>▸</span> Insurance and financial services firms reaching out to SMBs</li>
+        <li><span>▸</span> Education and training providers marketing to businesses</li>
+        <li><span>▸</span> Any B2B service provider that relies on outbound sales to grow</li>
+      </ul>
+    </div>
+    <div class="reveal reveal-delay-2">
+      <div class="section-label">Revenue Model</div>
+      <h2>How We Monetize</h2>
+      <div class="revenue-cards">
+        <div class="rev-card">
+          <div class="rev-icon">📦</div>
+          <div>
+            <div class="rev-title">Subscription Tiers</div>
+            <div class="rev-desc">Based on leads/month and channels enabled</div>
+          </div>
+        </div>
+        <div class="rev-card">
+          <div class="rev-icon">💬</div>
+          <div>
+            <div class="rev-title">Per-Conversation Credits</div>
+            <div class="rev-desc">For WhatsApp messages and voice calls</div>
+          </div>
+        </div>
+        <div class="rev-card">
+          <div class="rev-icon">🏢</div>
+          <div>
+            <div class="rev-title">Enterprise Plans</div>
+            <div class="rev-desc">Custom integrations, dedicated support, white-labeling</div>
+          </div>
+        </div>
+        <div class="rev-card">
+          <div class="rev-icon">🤝</div>
+          <div>
+            <div class="rev-title">Agency Reseller Program</div>
+            <div class="rev-desc">Offer as a managed service to agency clients</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STACK -->
+<section id="stack">
+  <div class="stack-header reveal">
+    <div class="section-label">Technical Foundation</div>
+    <h2>The Tech Stack</h2>
+  </div>
+  <div class="stack-grid reveal reveal-delay-1">
+    <div class="stack-cell">
+      <div class="stack-layer">Scraping Layer</div>
+      <div class="stack-item">Apify / Puppeteer</div>
+      <div class="stack-item">Google Maps API</div>
+      <div class="stack-item">LinkedIn API</div>
+      <div class="stack-item">Custom crawlers</div>
+    </div>
+    <div class="stack-cell">
+      <div class="stack-layer">Messaging Layer</div>
+      <div class="stack-item">WhatsApp Business API</div>
+      <div class="stack-item">360Dialog</div>
+      <div class="stack-item">Twilio</div>
+      <div class="stack-item">Fine-tuned LLMs</div>
+    </div>
+    <div class="stack-cell">
+      <div class="stack-layer">Voice & AI Layer</div>
+      <div class="stack-item">Vapi / Retell AI</div>
+      <div class="stack-item">Deepgram</div>
+      <div class="stack-item">ElevenLabs</div>
+      <div class="stack-item">GPT-4 / Claude</div>
+    </div>
+    <div class="stack-cell">
+      <div class="stack-layer">Orchestration</div>
+      <div class="stack-item">LangGraph / CrewAI</div>
+      <div class="stack-item">PostgreSQL + Redis</div>
+      <div class="stack-item">Stripe / Razorpay</div>
+      <div class="stack-item">Jira / ClickUp APIs</div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section id="cta">
+  <div class="hero-glow" style="top:10%;opacity:0.6;"></div>
+  <h2 class="reveal">Ready to <span style="color:var(--accent)">Automate</span><br>Your Pipeline?</h2>
+  <p class="reveal reveal-delay-1">Reach 10× more prospects. Respond 100× faster. Convert at 3–5× the rate. Let your humans do what they do best — build relationships and deliver great work.</p>
+  <div class="cta-buttons reveal reveal-delay-2">
+    <button class="btn-primary">Request a Demo</button>
+    <button class="btn-outline">View Full Deck</button>
+  </div>
+</section>
+
+<footer>
+  © 2025 LeadFlow AI — The Autonomous Sales Pipeline &nbsp;·&nbsp; Confidential Client Presentation
+</footer>
+
+<script>
+  // Scroll reveal
+  const reveals = document.querySelectorAll('.reveal');
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.1 });
+  reveals.forEach(el => obs.observe(el));
+
+  // Nav scrollspy
+  const sections = document.querySelectorAll('section[id]');
+  const navLinks = document.querySelectorAll('.nav-links a');
+  const navObs = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        navLinks.forEach(a => a.classList.remove('active'));
+        const link = document.querySelector(`.nav-links a[href="#${e.target.id}"]`);
+        if (link) link.classList.add('active');
+      }
+    });
+  }, { threshold: 0.4 });
+  sections.forEach(s => navObs.observe(s));
+
+  // Nav smooth scroll
+  navLinks.forEach(a => {
+    a.addEventListener('click', e => {
+      e.preventDefault();
+      document.querySelector(a.getAttribute('href')).scrollIntoView({ behavior: 'smooth' });
+    });
+  });
+</script>
+</body>
+</html>
